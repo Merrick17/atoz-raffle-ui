@@ -5,6 +5,9 @@ import {
   createStyles,
   Text,
   Image,
+  TextInput,
+  Switch,
+  Group,
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { IconSquareRoundedPlus } from "@tabler/icons-react";
@@ -24,18 +27,19 @@ import { BN, utils } from "@coral-xyz/anchor";
 import { LAMPORTS_PER_SOL, PublicKey, Transaction } from "@solana/web3.js";
 import { createTokenAccount } from "@/utils/ata";
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import withAdmin from "@/guards/withAdmin";
 const useStyles = createStyles((theme) => ({
   selectNft: {
-    width: 500,
+    width: 250,
     minHeight: 300,
     borderWidth: 3,
-    // borderColor: "#FFFF",
+    borderColor: "#0000",
     // borderRadius: 10,
-    // borderStyle: "solid",
+    borderStyle: "solid",
     marginTop: 15,
   },
   selectButton: {
-    borderColor: "#FFFF",
+    borderColor: "#000",
     borderRadius: 10,
     borderStyle: "solid",
     borderWidth: 3,
@@ -46,6 +50,7 @@ const create = () => {
   const { classes } = useStyles();
   const { connection } = useConnection();
   const anchorWallet = useAnchorWallet();
+  const [isTimerOn, setIsTimerOn] = useState(true);
   const { publicKey, connected, sendTransaction } = useWallet();
   const form = useForm({
     initialValues: {
@@ -58,13 +63,17 @@ const create = () => {
     validate: {
       totalSupply: (value) =>
         Number(value) <= 2 ? "At least 3 tickets" : null,
-      ticketPrice: (value) =>
-        Number(value) <= 0 ? "Price should be higher than 0" : null,
+      ticketPrice: (value) => {
+        console.log("Number", parseFloat(value.toString()));
+        return parseFloat(value.toString()) <= 0
+          ? "Price should be higher than 0"
+          : null;
+      },
     },
     transformValues: (values) => ({
       totalSupply: Number(values.totalSupply) || 0,
       ticketPrice: Number(values.ticketPrice) || 0,
-      endDate: values.endDate.getTime(),
+      endDate: isTimerOn ? values.endDate.getTime() : new Date(8640000000000000).getTime(),
       startDate: values.startDate.getTime(),
     }),
   });
@@ -119,7 +128,9 @@ const create = () => {
             new BN(startDate),
             new BN(endDate),
             selectedPrize.json?.name,
-            selectedPrize.mint.address
+            selectedPrize.mint.address,
+            isTimerOn
+
           )
           .accounts({
             raffleAccount: raffleAdr,
@@ -169,6 +180,34 @@ const create = () => {
       />
       <Flex w={"50%"} gap={10} direction={"column"} mah={400}>
         <form onSubmit={form.onSubmit((values) => handleSubmitForm(values))}>
+          <Group position="left">
+            <Text
+              style={{
+                fontSize: 17,
+
+                fontWeight: 600,
+              }}
+            >
+              Timer:
+            </Text>
+            <Switch
+              onLabel="ON"
+              offLabel="OFF"
+              size="lg"
+              color="indigo"
+              styles={{
+                label: {
+                  fontSize: 17,
+
+                  fontWeight: 600,
+                  marginBottom: 5,
+                  marginTop: 5,
+                },
+              }}
+              checked={isTimerOn}
+              onChange={(e) => setIsTimerOn(e.target.checked)}
+            />
+          </Group>
           <NumberInput
             label="Total Ticket Supply"
             placeholder="100"
@@ -176,23 +215,26 @@ const create = () => {
             styles={{
               label: {
                 fontSize: 17,
-                color: "#FFFF",
+
                 fontWeight: 600,
                 marginBottom: 5,
+                marginTop: 5,
               },
             }}
             {...form.getInputProps("totalSupply")}
           />
-          <NumberInput
+          <TextInput
             label="Ticket Price"
             placeholder="1"
             size="md"
+            type="text"
             styles={{
               label: {
                 fontSize: 17,
-                color: "#FFFF",
+
                 fontWeight: 600,
                 marginBottom: 5,
+                marginTop: 5,
               },
             }}
             {...form.getInputProps("ticketPrice")}
@@ -203,9 +245,10 @@ const create = () => {
             styles={{
               label: {
                 fontSize: 17,
-                color: "#FFFF",
+
                 fontWeight: 600,
                 marginBottom: 5,
+                marginTop: 5,
               },
             }}
             {...form.getInputProps("startDate")}
@@ -213,19 +256,21 @@ const create = () => {
           <DateInput
             label="End Date"
             size="md"
+            disabled={!isTimerOn}
             styles={{
               label: {
                 fontSize: 17,
-                color: "#FFFF",
+
                 fontWeight: 600,
                 marginBottom: 5,
+                marginTop: 5,
               },
             }}
             {...form.getInputProps("endDate")}
             minDate={new Date()}
             maxDate={dayjs(new Date()).add(1, "month").toDate()}
           />
-          <Button color="violet" type="submit" size="lg" mt={20}>
+          <Button color="red" type="submit" size="lg" mt={20} style={{ backgroundColor: "#ff3200" }}>
             Confirm Creation
           </Button>
         </form>
@@ -252,8 +297,8 @@ const create = () => {
               align={"center"}
               gap={20}
             >
-              <IconSquareRoundedPlus size={70} color="#FFF" />
-              <Text fw={600} fz={24} color="#FFFF">
+              <IconSquareRoundedPlus size={70} />
+              <Text fw={600} fz={24} color="dark">
                 Choose NFT for Raffle
               </Text>
             </Flex>
@@ -265,5 +310,5 @@ const create = () => {
     </Flex>
   );
 };
-
-export default create;
+//export default 
+export default withAdmin(create);

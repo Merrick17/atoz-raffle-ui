@@ -1,5 +1,5 @@
 import { getProgram } from "@/utils/program";
-import { Card, Flex, Image, Text } from "@mantine/core";
+import { Card, Flex, Image, Text, Tooltip } from "@mantine/core";
 import { Metaplex, Nft } from "@metaplex-foundation/js";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
@@ -23,8 +23,9 @@ const RaffleCard = ({ account }: RaffleCardType) => {
     const nft = await metaplex
       .nfts()
       .findByMint({ mintAddress: parsedAccount.prize });
-    console.log(`PArsed Account`, nft);
-    console.log("Account Pub Key", parsedAccount);
+    // console.log(`PArsed Account`, nft);
+    // console.log("Account Pub Key", parsedAccount.startTime.toNumber());
+    // console.log("End DATE",parsedAccount.endTime.toNumber())
     setParsedAccount(parsedAccount);
     //@ts-ignore
     setPrizeInfo(nft);
@@ -40,7 +41,7 @@ const RaffleCard = ({ account }: RaffleCardType) => {
     parseRaffleInfo();
   }, [account]);
   return (
-    <Card withBorder w={400} h={610} radius={"md"}>
+    <Card withBorder w={400} h={640} radius={"md"}>
       <Card.Section>
         <Image
           src={prizeInfo?.json?.image}
@@ -74,12 +75,40 @@ const RaffleCard = ({ account }: RaffleCardType) => {
           </Flex>
         </Flex>
         {parsedAccount &&
+        parsedAccount.winner !== "11111111111111111111111111111111" ? (
+          <Tooltip label={parsedAccount.winner.toBase58()}>
+            <Flex justify={"space-between"} align={"center"}>
+              {parsedAccount.winner.toBase58() !==
+              "11111111111111111111111111111111" ? (
+                <>
+                  <Text>Winner</Text>
+                  <Text fw={600} fz={14} style={{ cursor: "pointer" }}>
+                    {parsedAccount.winner.toBase58().slice(0, 4)}...
+                    {parsedAccount.winner.toBase58().slice(-4)}
+                  </Text>
+                </>
+              ) : (
+                <Text color="white" style={{ visibility: "hidden" }}>
+                  Winner not picked yet
+                </Text>
+              )}
+            </Flex>
+          </Tooltip>
+        ) : (
+          <Flex mt={130} h={150}>
+            <Text></Text>
+          </Flex>
+        )}
+        {parsedAccount &&
           (parsedAccount.startTime.toNumber() > Date.now() ? (
             <StartRaffle countdown={parsedAccount.startTime.toNumber()} />
           ) : (
             <RaffleButton
+              closed={parsedAccount.open}
+              useTimer={parsedAccount.useTimer}
               countdown={new Date(parsedAccount.endTime.toNumber())}
               onClick={showRaffleDetails}
+              winner={parsedAccount.winner.toBase58()}
             />
           ))}
       </Card.Section>

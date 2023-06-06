@@ -6,7 +6,7 @@ import { useViewportSize } from "@mantine/hooks";
 const Layout = ({ children }: { children: any }) => {
   const { width, height } = useViewportSize();
   return (
-    <Flex direction={"column"} w={width} h={height}>
+    <Flex direction={"column"} justify={"center"} align={"center"} >
       <MainHeader />
       {children}
     </Flex>

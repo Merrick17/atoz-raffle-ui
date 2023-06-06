@@ -1,5 +1,4 @@
 import { useDrawer } from "@/context/Drawer";
-import { createTokenAccount } from "@/utils/ata";
 import { getProgram } from "@/utils/program";
 import { utils } from "@coral-xyz/anchor";
 import { Button, Center, Flex, Text } from "@mantine/core";
@@ -7,8 +6,7 @@ import { notifications } from "@mantine/notifications";
 import {
   TOKEN_PROGRAM_ID,
   createAssociatedTokenAccountInstruction,
-  getAssociatedTokenAddress,
-  getOrCreateAssociatedTokenAccount,
+  getAssociatedTokenAddress
 } from "@solana/spl-token";
 import {
   useAnchorWallet,
@@ -16,13 +14,10 @@ import {
   useWallet,
 } from "@solana/wallet-adapter-react";
 import {
-  Keypair,
   PublicKey,
-  SystemProgram,
-  Transaction,
+  Transaction
 } from "@solana/web3.js";
 import { FC } from "react";
-import Countdown from "react-countdown";
 
 // Renderer callback with condition
 const renderer = ({
@@ -143,7 +138,7 @@ const ClaimButton: FC<RaffleButtonProps> = () => {
   };
   return (
     <Center onClick={handleClaim}>
-      <Button color="violet" radius={"md"} fullWidth size="lg" mt={"lg"} h={60}>
+      <Button color="red" radius={"md"} style={{backgroundColor:"#ff3200"}} fullWidth size="lg" mt={"lg"} h={60}>
         <Flex direction={"column"} justify={"center"} align={"center"}>
           <Text fz={20}>Claim Prize</Text>
         </Flex>

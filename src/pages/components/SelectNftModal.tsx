@@ -99,8 +99,9 @@ const SelectNftModal = ({
                 </Text>
               </Flex>
               <Button
-                color="violet"
+                color="red"
                 fullWidth
+                style={{backgroundColor:"#ff3200"}}
                 onClick={() => {
                   handelConfirm(nft);
                   handleClose();

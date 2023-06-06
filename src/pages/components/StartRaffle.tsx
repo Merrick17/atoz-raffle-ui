@@ -34,9 +34,9 @@ const StartRaffle: FC<RaffleButtonProps> = ({ countdown, onClick }) => {
     
     return (
         <Center onClick={onClick} >
-            <Button color="violet" radius={"md"} fullWidth size="lg" mt={"lg"} h={60}>
+            <Button color="red" radius={"md"} fullWidth size="lg" mt={"lg"} h={60} style={{backgroundColor:"#ff3200"}}>
                 <Flex direction={"column"} justify={"center"} align={"center"}>
-                    <Text fz={20}>View Raffle</Text>
+                    <Text fz={20}>Join Raffle</Text>
                     <span>
                        will start in <Countdown date={countdown} renderer={renderer} />
                     </span>

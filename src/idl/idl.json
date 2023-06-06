@@ -65,6 +65,10 @@
         {
           "name": "prize",
           "type": "publicKey"
+        },
+        {
+          "name": "useTimer",
+          "type": "bool"
         }
       ]
     },
@@ -236,6 +240,14 @@
           {
             "name": "prize",
             "type": "publicKey"
+          },
+          {
+            "name": "open",
+            "type": "bool"
+          },
+          {
+            "name": "useTimer",
+            "type": "bool"
           }
         ]
       }
@@ -334,6 +346,6 @@
     }
   ],
   "metadata": {
-    "address": "2gYA2PGHSxWyVnhfHy9jAuyukcF8B3hLxSMWUN1dhzU8"
+    "address": "BXpLxLCwAwqP9d273RH9n7GNzsyafrt5wMp658Qg2hcv"
   }
 }

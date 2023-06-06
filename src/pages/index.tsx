@@ -1,6 +1,6 @@
 import { useDrawer } from "@/context/Drawer";
 import { getProgram } from "@/utils/program";
-import { Drawer, Flex, Image, Text } from "@mantine/core";
+import { Drawer, Flex, Image, Tabs, Text, Tooltip } from "@mantine/core";
 import {
   useAnchorWallet,
   useConnection,
@@ -9,24 +9,37 @@ import {
 import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 import { useEffect, useState } from "react";
 import BuyTicket from "./components/BuyTicket";
-import RaffleCard from "./components/RaffleCard";
 import ClaimButton from "./components/ClaminButton";
+import RaffleCard from "./components/RaffleCard";
+import { useViewportSize } from "@mantine/hooks";
 
 const Home = () => {
-  const programIdString = "2gYA2PGHSxWyVnhfHy9jAuyukcF8B3hLxSMWUN1dhzU8";
+  const programIdString = "BXpLxLCwAwqP9d273RH9n7GNzsyafrt5wMp658Qg2hcv";
   const { connection } = useConnection();
   const anchorWallet = useAnchorWallet();
   const { connected, publicKey } = useWallet();
   const [raffleAccounts, setRaffleAccounts] = useState<any[]>([]);
   const { isOpen, closeDrawer, raffleAccount, nftDetails } = useDrawer();
   const program = getProgram(connection, anchorWallet);
+  const {width} = useViewportSize();  
   const displayButton = () => {
-    if (raffleAccount.endTime.toNumber() > Date.now() && raffleAccount.winner.toBase58() != "11111111111111111111111111111111") {
-      return <ClaimButton />;
+    if (raffleAccount) {
+      if (
+        raffleAccount.endTime.toNumber() > Date.now() &&
+        raffleAccount.winner.toBase58() != "11111111111111111111111111111111"
+      ) {
+        return <ClaimButton />;
+      } else {
+        return (
+          <BuyTicket
+            useTimer={raffleAccount.useTimer}
+            closed={raffleAccount.open}
+            countdown={new Date(raffleAccount.endTime.toNumber())}
+          />
+        );
+      }
     } else {
-      return (
-        <BuyTicket countdown={new Date(raffleAccount.endTime.toNumber())} />
-      );
+      return <></>;
     }
   };
   useEffect(() => {
@@ -68,7 +81,6 @@ const Home = () => {
         opened={isOpen}
         onClose={closeDrawer}
         position="right"
-        styles={{ content: { backgroundColor: "#3a416d" } }}
         title={raffleAccount && raffleAccount.name}
       >
         {raffleAccount && (
@@ -79,7 +91,11 @@ const Home = () => {
             direction={"column"}
             p={20}
             gap={20}
-            style={{ borderRadius: 10, backgroundColor: "#FFF" }}
+            style={{
+              borderRadius: 10,
+              backgroundColor: "#FFF",
+              border: "0.0625rem solid #dee2e6",
+            }}
           >
             {nftDetails && (
               <>
@@ -96,7 +112,7 @@ const Home = () => {
                     )}
                   </Flex>
                   <Flex direction={"column"}>
-                    <Text>Ticket Price</Text>
+                    <Text>Ticket Price: </Text>
                     {raffleAccount && (
                       <Text fw={600} fz={20}>
                         {raffleAccount.ticketPrice.toNumber() /
@@ -106,16 +122,75 @@ const Home = () => {
                     )}
                   </Flex>
                 </Flex>
+                {raffleAccount &&
+                  raffleAccount.winner.toBase58() !==
+                  "11111111111111111111111111111111" && (
+                    <Tooltip label={raffleAccount.winner.toBase58()}>
+                      <Flex
+                        justify={"space-between"}
+                        align={"center"}
+                        style={{ cursor: "pointer" }}
+                      >
+                        <Text>Winner: </Text>
+                        {raffleAccount && (
+                          <Text fw={600} fz={20}>
+                            {raffleAccount.winner.toBase58().slice(0, 4)}....{" "}
+                            {raffleAccount.winner.toBase58().slice(-4)}
+                          </Text>
+                        )}
+                      </Flex>
+                    </Tooltip>
+                  )}
                 {raffleAccount && displayButton()}
               </>
             )}
           </Flex>
         )}
       </Drawer>
-      <Flex w={"100%"} h={"100%"} p={30} gap={30} wrap={"wrap"}>
-        {raffleAccounts.map((account, ind) => (
-          <RaffleCard account={account} key={ind.toString()} />
-        ))}
+      <Flex
+        w={width * 0.67}
+        h={"100%"}
+        mt={10}
+
+        justify={"center"}
+      >
+        <Tabs defaultValue="actives" w={"100%"} color="red" styles={{ tabsList: { borderBottom: 'none' } }}>
+          <Tabs.List>
+            <Tabs.Tab value="actives">
+              <Text style={{ color: "rgb(255, 50, 0)" }} fw={"bold"} fz={20}>
+                Active Raffles
+              </Text>
+            </Tabs.Tab>
+            <Tabs.Tab
+              value="passives"
+              style={{ color: "rgb(255, 50, 0)" }}
+              fw={"bold"}
+              fz={20}
+            >
+              Passive Raffles
+            </Tabs.Tab>
+          </Tabs.List>
+
+          <Tabs.Panel value="actives" pt="xs">
+            <Flex w={"100%"} justify={"flex-start"} gap={42} wrap={"wrap"}>
+              {raffleAccounts
+                .filter((elm) => elm.open && !elm.claimed)
+                .map((account, ind) => (
+                  <RaffleCard account={account} key={ind.toString()} />
+                ))}
+            </Flex>
+          </Tabs.Panel>
+
+          <Tabs.Panel value="passives" pt="xs">
+            <Flex w={"100%"} justify={"flex-start"} gap={42} wrap={"wrap"}>
+              {raffleAccounts
+                .filter((elm) => !elm.open && !elm.claimed)
+                .map((account, ind) => (
+                  <RaffleCard account={account} key={ind.toString()} />
+                ))}
+            </Flex>
+          </Tabs.Panel>
+        </Tabs>
       </Flex>
     </>
   );

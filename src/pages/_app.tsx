@@ -23,9 +23,9 @@ export default function App({ Component, pageProps }: AppProps) {
   const network = WalletAdapterNetwork.Devnet;
 
   // You can also provide a custom RPC endpoint.
-
-  const endpoint =
-    "https://little-practical-wildflower.solana-devnet.discover.quiknode.pro/b33c1731ef24950ad5a92445bc1133e16e4271ed/";
+  const endpoint = "https://flashy-frosty-energy.solana-mainnet.discover.quiknode.pro/d43909b1eb698964f230e00afe18c673d10e5c0f/";
+  // const endpoint =
+  //   "https://solana-mainnet.g.alchemy.com/v2/eX95m8Jvxulc6KkZbzJ8QlJYwLf5DqcE";
   const wallets = useMemo(
     () => [
       /**

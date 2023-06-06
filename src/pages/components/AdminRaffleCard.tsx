@@ -1,5 +1,6 @@
 import { getProgram } from "@/utils/program";
 import { Button, Card, Flex, Group, Image, Modal, Text } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 import { Metaplex, Nft } from "@metaplex-foundation/js";
 import {
     useAnchorWallet,
@@ -8,10 +9,6 @@ import {
 } from "@solana/wallet-adapter-react";
 import { LAMPORTS_PER_SOL, Transaction } from "@solana/web3.js";
 import { useEffect, useState } from "react";
-import RaffleButton from "./RaffleButton";
-import { useDrawer } from "@/context/Drawer";
-import StartRaffle from "./StartRaffle";
-import { notifications } from "@mantine/notifications";
 import DetailsModal from "./DetailsModal";
 type AdminRaffleCardType = {
     account: any;
@@ -121,6 +118,7 @@ const AdminRaffleCard = ({ account }: AdminRaffleCardType) => {
                     <Group>
                         <Button
                             color="red"
+                            style={{ backgroundColor: "#ff3200" }}
                             onClick={() => {
                                 setIsWinnerOpen(false);
                             }}

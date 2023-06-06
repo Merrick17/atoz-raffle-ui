@@ -6,6 +6,7 @@ import { PublicKey } from "@solana/web3.js";
 import { useEffect, useState } from "react";
 import AdminRaffleCard from "../components/AdminRaffleCard";
 import { useRouter } from "next/router";
+import withAdmin from "@/guards/withAdmin";
 
 const AdminHome = () => {
     const programIdString = "2gYA2PGHSxWyVnhfHy9jAuyukcF8B3hLxSMWUN1dhzU8";
@@ -58,8 +59,9 @@ const AdminHome = () => {
                         router.push('/admin/create')
                     }}
                     size="lg"
-                    color="violet"
+                    color="red"
                     radius={"md"}
+                    style={{ backgroundColor: "#ff3200" }}
                 >
                     Create new Raffle
                 </Button>
@@ -73,4 +75,4 @@ const AdminHome = () => {
     );
 };
 
-export default AdminHome;
+export default withAdmin(AdminHome);

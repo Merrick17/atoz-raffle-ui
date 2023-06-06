@@ -4,5 +4,8 @@ html {
 }
 body {
   font-family: 'Comic Neue', cursive;
-  background: #3a416d !important;
+  background: #FFFF !important;
+}
+.wallet-adapter-button-trigger{
+  background-color: #ff3200 !important;
 }
