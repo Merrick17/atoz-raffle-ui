@@ -82,14 +82,23 @@ const AdminRaffleCard = ({ account }: AdminRaffleCardType) => {
                 }
             }
         } catch (error) {
-            console.log("Error", error)
+            console.log("Error", error);
         }
     };
     useEffect(() => {
-
         parseRaffleInfo();
     }, [account]);
+    const displayRaffle = async () => {
+        try {
+            if (parsedAccount) {
+                const ix = await program.methods.changeVisibility(!parsedAccount.visible).accounts({ raffleAccount: account.publicKey }).instruction();
+                const tx = new Transaction().add(ix);
+                const res = await sendTransaction(tx, connection);
+            }
+        } catch (error) {
 
+        }
+    }
     return (
         <>
             <Modal
@@ -147,9 +156,14 @@ const AdminRaffleCard = ({ account }: AdminRaffleCardType) => {
                 </Card.Section>
                 {/* */}
                 <Card.Section p={10}>
-                    <Text fw={600} fz={25}>
-                        {parsedAccount && parsedAccount.name}
-                    </Text>
+                    <Flex justify={"space-between"} align={"center"} my={5}>
+                        <Text fw={600} fz={25}>
+                            {parsedAccount && parsedAccount.name}
+                        </Text>
+                        <Button color="red" radius={"md"} onClick={displayRaffle}>
+                            {parsedAccount && parsedAccount.visible ? "Hide" : "Display"}
+                        </Button>
+                    </Flex>
                     <Flex w={"100%"} justify={"space-between"} align={"center"}>
                         <Flex direction={"column"}>
                             <Text>Tickets Remaining</Text>
@@ -164,7 +178,11 @@ const AdminRaffleCard = ({ account }: AdminRaffleCardType) => {
                             <Text>Ticket Price</Text>
                             {parsedAccount && (
                                 <Text fw={600} fz={20}>
-                                    {parsedAccount.ticketPrice.toNumber() / LAMPORTS_PER_SOL} SOL
+                                    {!parsedAccount.useSplPay
+                                        ? `${parsedAccount.ticketPrice.toNumber() / LAMPORTS_PER_SOL
+                                        } SOL`
+                                        : `${parsedAccount.ticketPrice.toNumber() / Math.pow(10, 9)
+                                        } SOUL`}
                                 </Text>
                             )}
                         </Flex>
@@ -182,10 +200,13 @@ const AdminRaffleCard = ({ account }: AdminRaffleCardType) => {
                             onClick={() => {
                                 setIdDetailsOpen(true);
                             }}
+                            radius={"md"}
+                            style={{ backgroundColor: "#ff3200" }}
                         >
                             Details
                         </Button>
-                        {parsedAccount && parsedAccount.winner.toBase58() !==
+                        {parsedAccount &&
+                            parsedAccount.winner.toBase58() !==
                             "11111111111111111111111111111111" ? (
                             <Button
                                 fullWidth
@@ -193,11 +214,19 @@ const AdminRaffleCard = ({ account }: AdminRaffleCardType) => {
                                 onClick={() => {
                                     setIsWinnerOpen(true);
                                 }}
+                                radius={"md"}
+                                style={{ backgroundColor: "#ff3200" }}
                             >
                                 See Winner
                             </Button>
                         ) : (
-                            <Button fullWidth size="md" onClick={pickWinner}>
+                            <Button
+                                fullWidth
+                                size="md"
+                                radius={"md"}
+                                style={{ backgroundColor: "#ff3200" }}
+                                onClick={pickWinner}
+                            >
                                 Pick Winner
                             </Button>
                         )}

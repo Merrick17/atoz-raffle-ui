@@ -69,6 +69,10 @@
         {
           "name": "useTimer",
           "type": "bool"
+        },
+        {
+          "name": "useSplPay",
+          "type": "bool"
         }
       ]
     },
@@ -112,6 +116,73 @@
       ]
     },
     {
+      "name": "changeVisibility",
+      "accounts": [
+        {
+          "name": "raffleAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "signer",
+          "isMut": false,
+          "isSigner": true
+        }
+      ],
+      "args": [
+        {
+          "name": "visible",
+          "type": "bool"
+        }
+      ]
+    },
+    {
+      "name": "buyTicketSpl",
+      "accounts": [
+        {
+          "name": "raffleAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "ticket",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "prizeTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "signerTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "signer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
       "name": "pickWinner",
       "accounts": [
         {
@@ -131,6 +202,22 @@
         },
         {
           "name": "signer",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "closeRaffle",
+      "accounts": [
+        {
+          "name": "account",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "destination",
           "isMut": true,
           "isSigner": false
         }
@@ -182,6 +269,86 @@
   "accounts": [
     {
       "name": "Raffle",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "useSplPay",
+            "type": "bool"
+          },
+          {
+            "name": "winner",
+            "type": "publicKey"
+          },
+          {
+            "name": "totalSuppy",
+            "type": "u64"
+          },
+          {
+            "name": "ticketsBought",
+            "type": "u64"
+          },
+          {
+            "name": "ticketPrice",
+            "type": "u64"
+          },
+          {
+            "name": "startTime",
+            "type": "i64"
+          },
+          {
+            "name": "endTime",
+            "type": "i64"
+          },
+          {
+            "name": "participantsList",
+            "type": {
+              "vec": {
+                "defined": "Participants"
+              }
+            }
+          },
+          {
+            "name": "treasury",
+            "type": "publicKey"
+          },
+          {
+            "name": "claimed",
+            "type": "bool"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "ticketList",
+            "type": {
+              "vec": {
+                "defined": "TicketBought"
+              }
+            }
+          },
+          {
+            "name": "prize",
+            "type": "publicKey"
+          },
+          {
+            "name": "open",
+            "type": "bool"
+          },
+          {
+            "name": "useTimer",
+            "type": "bool"
+          },
+          {
+            "name": "visible",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "OldRaffle",
       "type": {
         "kind": "struct",
         "fields": [

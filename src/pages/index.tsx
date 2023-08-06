@@ -21,7 +21,7 @@ const Home = () => {
   const [raffleAccounts, setRaffleAccounts] = useState<any[]>([]);
   const { isOpen, closeDrawer, raffleAccount, nftDetails } = useDrawer();
   const program = getProgram(connection, anchorWallet);
-  const {width} = useViewportSize();  
+  const { width } = useViewportSize();
   const displayButton = () => {
     if (raffleAccount) {
       if (
@@ -48,10 +48,25 @@ const Home = () => {
     // Fetch initial account data
     const initAccountData = async () => {
       const parsedAccount = await program?.account.raffle.all();
-      console.log("parsedAccount", parsedAccount);
+      console.log(
+        "parsedAccount",
+        parsedAccount.map((elm) => elm.publicKey.toBase58())
+      );
+      const accountList = parsedAccount.filter(
+        (elm) =>
+          ![
+            "FbbyTtSyyTu7Stbx7RMYXfbwrfgDJxsEd9Z3yvHnUoYp",
+            "8SDgKd6R9w6Xqo8BULYP8aJz4XmK158KQk4z7x4DPnk8",
+            "BxFDN37re5ZU8ZQb3WvXpZBWkYkfN6mGx4aAPzEKqLQq",
+            "HbW8StbrbE9Fk77Szc5Wjgj9nQsnnggzPmrUZMSRRZqH",
+          ].includes(elm.publicKey.toBase58())
+      );
+      console.log("ACOUNT LIST", accountList)
+
+      setRaffleAccounts(accountList);
       // const accounts = await connection.getParsedProgramAccounts(programId);
       // console.log("Accounts", accounts);
-      setRaffleAccounts(parsedAccount);
+
     };
 
     initAccountData();
@@ -62,10 +77,12 @@ const Home = () => {
       async (accountInfo, context) => {
         // Fetch updated account data
         const parsedAccount = await program?.account.raffle.all();
-        console.log("parsedAccount", parsedAccount);
-        // const accounts = await connection.getParsedProgramAccounts(programId);
-        // console.log("Accounts", accounts);
-        setRaffleAccounts(parsedAccount);
+
+        const accountList = parsedAccount
+
+        console.log("ACOUNT LIST", accountList)
+
+        setRaffleAccounts(accountList);
       }
     );
 
@@ -147,14 +164,13 @@ const Home = () => {
           </Flex>
         )}
       </Drawer>
-      <Flex
-        w={width * 0.67}
-        h={"100%"}
-        mt={10}
-
-        justify={"center"}
-      >
-        <Tabs defaultValue="actives" w={"100%"} color="red" styles={{ tabsList: { borderBottom: 'none' } }}>
+      <Flex w={width * 0.67} h={"100%"} mt={10} justify={"center"}>
+        <Tabs
+          defaultValue="actives"
+          w={"100%"}
+          color="red"
+          styles={{ tabsList: { borderBottom: "none" } }}
+        >
           <Tabs.List>
             <Tabs.Tab value="actives">
               <Text style={{ color: "rgb(255, 50, 0)" }} fw={"bold"} fz={20}>
@@ -173,8 +189,11 @@ const Home = () => {
 
           <Tabs.Panel value="actives" pt="xs">
             <Flex w={"100%"} justify={"flex-start"} gap={42} wrap={"wrap"}>
-              {raffleAccounts
-                .filter((elm) => elm.open && !elm.claimed)
+              {raffleAccounts.filter((elm) => {
+                console.log(" elm.account.visible", elm.account)
+                return elm.account.visible
+              })
+                .filter((elm) => elm.account.open && !elm.account.claimed)
                 .map((account, ind) => (
                   <RaffleCard account={account} key={ind.toString()} />
                 ))}
@@ -183,8 +202,8 @@ const Home = () => {
 
           <Tabs.Panel value="passives" pt="xs">
             <Flex w={"100%"} justify={"flex-start"} gap={42} wrap={"wrap"}>
-              {raffleAccounts
-                .filter((elm) => !elm.open && !elm.claimed)
+              {raffleAccounts.filter((elm) => elm.account.visible)
+                .filter((elm) => !elm.account.open && elm.account.claimed)
                 .map((account, ind) => (
                   <RaffleCard account={account} key={ind.toString()} />
                 ))}

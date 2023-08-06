@@ -7,6 +7,7 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { useViewportSize } from "@mantine/hooks";
+import { authorityAddress } from "@/utils/constants";
 
 const useStyles = createStyles((theme) => ({
   header: {
@@ -17,6 +18,7 @@ const useStyles = createStyles((theme) => ({
     backgroundColor: "#FFFF",
     padding: 20,
     borderBottom: "0.25rem #DADADA solid",
+    zIndex:1
   },
   confirmButton: {
     backgroundColor: "#24243e",
@@ -29,7 +31,7 @@ const MainHeader = () => {
   const { width } = useViewportSize();
   const router = useRouter();
   const { connected, publicKey } = useWallet();
-  const adminWallet = "AToZYuagDiJn5j9qPvwAcnQjiTmoefHU3F6GgL3rPJVy";
+  const adminWallet = authorityAddress.toBase58();
   //const adminWallet="Hx5oruS1xKhHVjdHnbvLPQnJwyCAwd6QzzJ6yPnoqgP8"
   return (
     <Header

@@ -1,4 +1,7 @@
 import { useDrawer } from "@/context/Drawer";
+import { createTokenAccount } from "@/utils/ata";
+import { getAta } from "@/utils/ata2";
+import { rewardMint } from "@/utils/constants";
 import { getProgram } from "@/utils/program";
 import {
   ActionIcon,
@@ -12,12 +15,18 @@ import {
   rem,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
+import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import {
   useAnchorWallet,
   useConnection,
   useWallet,
 } from "@solana/wallet-adapter-react";
-import { Keypair, SystemProgram, Transaction } from "@solana/web3.js";
+import {
+  Keypair,
+  PublicKey,
+  SystemProgram,
+  Transaction,
+} from "@solana/web3.js";
 import { FC, useRef, useState } from "react";
 import Countdown from "react-countdown";
 
@@ -64,44 +73,103 @@ const BuyToken: FC<RaffleButtonProps> = ({ countdown, closed, useTimer }) => {
           raffleAccount.totalSuppy.toNumber() >
           raffleAccount.ticketsBought.toNumber()
         ) {
-          const program = getProgram(connection, anchorWallet);
-          let tickets: any[] = [];
-          let Tx = new Transaction();
-          for (let i = 0; i < Number(value); i++) {
-            const ticket = Keypair.generate();
-            const buyInst = await program.methods
-              .buyTicket(raffleAccount.ticketPrice)
-              .accounts({
-                raffleAccount: raffleAdr,
-                signer: publicKey,
-                ticket: ticket.publicKey,
-                systemProgram: SystemProgram.programId,
-                treasuryAccount: raffleAccount.treasury,
-              })
-              .instruction();
-            tickets.push(ticket);
-            Tx.add(buyInst);
+          if (raffleAccount.useSplPay) {
+            const program = getProgram(connection, anchorWallet);
+            let tickets: any[] = [];
+            let Tx = new Transaction();
+            const { pubkey: payerAta, ix: payerIx } = await getAta(
+              connection,
+              rewardMint,
+              publicKey,
+              publicKey
+            );
+            if (payerIx) {
+              const tx = new Transaction().add(payerIx);
+              const res = await sendTransaction(tx, connection);
+            }
+            const { pubkey: programAta, ix: programIx } = await getAta(
+              connection,
+              rewardMint,
+              publicKey,
+              raffleAccount.treasury, true
+            );
+            if (programIx) {
+              const tx = new Transaction().add(programIx);
+              const res = await sendTransaction(tx, connection);
+            }
+            for (let i = 0; i < Number(value); i++) {
+              const ticket = Keypair.generate();
+              const buyInst = await program.methods
+                .buyTicketSpl(raffleAccount.ticketPrice)
+                .accounts({
+                  raffleAccount: raffleAdr,
+                  signer: publicKey,
+                  ticket: ticket.publicKey,
+                  systemProgram: SystemProgram.programId,
+                  prizeTokenAccount: programAta,
+                  signerTokenAccount: payerAta,
+                  tokenProgram: TOKEN_PROGRAM_ID,
+                })
+                .instruction();
+              tickets.push(ticket);
+              Tx.add(buyInst);
+            }
+            const tx = await sendTransaction(Tx, connection, {
+              skipPreflight: true,
+              signers: [...tickets],
+            });
+            notifications.show({
+              color: "teal",
+              title: "Transaction Sent",
+              message: (
+                <span>
+                  View Transaction on{" "}
+                  {
+                    <a href={`https://solscan.io/tx/${tx}`} target="_blank">
+                      Solscan
+                    </a>
+                  }
+                </span>
+              ),
+            });
+          } else {
+            const program = getProgram(connection, anchorWallet);
+            let tickets: any[] = [];
+            let Tx = new Transaction();
+            for (let i = 0; i < Number(value); i++) {
+              const ticket = Keypair.generate();
+              const buyInst = await program.methods
+                .buyTicket(raffleAccount.ticketPrice)
+                .accounts({
+                  raffleAccount: raffleAdr,
+                  signer: publicKey,
+                  ticket: ticket.publicKey,
+                  systemProgram: SystemProgram.programId,
+                  treasuryAccount: raffleAccount.treasury,
+                })
+                .instruction();
+              tickets.push(ticket);
+              Tx.add(buyInst);
+            }
+            const tx = await sendTransaction(Tx, connection, {
+              skipPreflight: true,
+              signers: [...tickets],
+            });
+            notifications.show({
+              color: "teal",
+              title: "Transaction Sent",
+              message: (
+                <span>
+                  View Transaction on{" "}
+                  {
+                    <a href={`https://solscan.io/tx/${tx}`} target="_blank">
+                      Solscan
+                    </a>
+                  }
+                </span>
+              ),
+            });
           }
-          // const buyTx = new Transaction().add(buyInst);
-          const tx = await sendTransaction(Tx, connection, {
-            skipPreflight: true,
-            signers: [...tickets],
-          });
-          console.log("Tx", tx);
-          notifications.show({
-            color: "teal",
-            title: "Transaction Sent",
-            message: (
-              <span>
-                View Transaction on{" "}
-                {
-                  <a href={`https://solscan.io/tx/${tx}`} target="_blank">
-                    Solscan
-                  </a>
-                }
-              </span>
-            ),
-          });
         } else {
           notifications.show({
             color: "red",
@@ -119,6 +187,7 @@ const BuyToken: FC<RaffleButtonProps> = ({ countdown, closed, useTimer }) => {
         });
       }
     } catch (error: any) {
+      console.log("Error", error)
       notifications.show({
         color: "red",
         title: "Error",
@@ -173,7 +242,7 @@ const BuyToken: FC<RaffleButtonProps> = ({ countdown, closed, useTimer }) => {
         h={60}
         onClick={handleBuy}
       >
-          <Flex direction={"column"} justify={"center"} align={"center"}>
+        <Flex direction={"column"} justify={"center"} align={"center"}>
           <Text fz={20}>Buy Ticket</Text>
           {useTimer && (
             <span>

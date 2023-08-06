@@ -48,15 +48,16 @@ const SelectNftModal = ({
       const nftFetchedList = await metaplex
         .nfts()
         .findAllByOwner({ owner: publicKey });
-
+      console.log("Result", nftFetchedList.map((elm: any) => elm.mintAddress.toBase58()
+      ))
       const result = nftFetchedList.map((elm) => {
         //@ts-ignore
-        return metaplex.nfts().load({ metadata: elm });
+        return metaplex.nfts().findByMint({ mintAddress: elm.mintAddress });
       });
       const finalNftList = await Promise.all(result);
       console.log("NFT", finalNftList);
 
-      setNftList(finalNftList);
+       setNftList(finalNftList);
     }
   };
   useEffect(() => {
@@ -101,7 +102,7 @@ const SelectNftModal = ({
               <Button
                 color="red"
                 fullWidth
-                style={{backgroundColor:"#ff3200"}}
+                style={{ backgroundColor: "#ff3200" }}
                 onClick={() => {
                   handelConfirm(nft);
                   handleClose();

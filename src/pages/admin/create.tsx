@@ -1,33 +1,33 @@
+import withAdmin from "@/guards/withAdmin";
+import { createTokenAccount } from "@/utils/ata";
+import { getProgram } from "@/utils/program";
+import { BN, utils } from "@coral-xyz/anchor";
 import {
   Button,
   Flex,
-  NumberInput,
-  createStyles,
-  Text,
-  Image,
-  TextInput,
-  Switch,
   Group,
+  Image,
+  NumberInput,
+  Switch,
+  Text,
+  TextInput,
+  createStyles,
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
-import { IconSquareRoundedPlus } from "@tabler/icons-react";
-import SelectNftModal from "../components/SelectNftModal";
-import { useMemo, useState } from "react";
-import { Nft } from "@metaplex-foundation/js";
 import { useForm } from "@mantine/form";
-import dayjs from "dayjs";
 import { notifications } from "@mantine/notifications";
-import { getProgram } from "@/utils/program";
+import { Nft } from "@metaplex-foundation/js";
+import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import {
   useAnchorWallet,
   useConnection,
   useWallet,
 } from "@solana/wallet-adapter-react";
-import { BN, utils } from "@coral-xyz/anchor";
 import { LAMPORTS_PER_SOL, PublicKey, Transaction } from "@solana/web3.js";
-import { createTokenAccount } from "@/utils/ata";
-import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
-import withAdmin from "@/guards/withAdmin";
+import { IconSquareRoundedPlus } from "@tabler/icons-react";
+import dayjs from "dayjs";
+import { useState } from "react";
+import SelectNftModal from "../components/SelectNftModal";
 const useStyles = createStyles((theme) => ({
   selectNft: {
     width: 250,
@@ -51,6 +51,7 @@ const create = () => {
   const { connection } = useConnection();
   const anchorWallet = useAnchorWallet();
   const [isTimerOn, setIsTimerOn] = useState(true);
+  const [paywithSpl, setPayWithSpl] = useState(true);
   const { publicKey, connected, sendTransaction } = useWallet();
   const form = useForm({
     initialValues: {
@@ -73,7 +74,9 @@ const create = () => {
     transformValues: (values) => ({
       totalSupply: Number(values.totalSupply) || 0,
       ticketPrice: Number(values.ticketPrice) || 0,
-      endDate: isTimerOn ? values.endDate.getTime() : new Date(8640000000000000).getTime(),
+      endDate: isTimerOn
+        ? values.endDate.getTime()
+        : new Date(8640000000000000).getTime(),
       startDate: values.startDate.getTime(),
     }),
   });
@@ -124,13 +127,15 @@ const create = () => {
           .initialize(
             //@ts-ignore
             new BN(totalSupply),
-            new BN(ticketPrice * LAMPORTS_PER_SOL),
+            paywithSpl
+              ? new BN(ticketPrice * Math.pow(10, 9))
+              : new BN(ticketPrice * LAMPORTS_PER_SOL),
             new BN(startDate),
             new BN(endDate),
             selectedPrize.json?.name,
             selectedPrize.mint.address,
-            isTimerOn
-
+            isTimerOn,
+            paywithSpl
           )
           .accounts({
             raffleAccount: raffleAdr,
@@ -180,34 +185,64 @@ const create = () => {
       />
       <Flex w={"50%"} gap={10} direction={"column"} mah={400}>
         <form onSubmit={form.onSubmit((values) => handleSubmitForm(values))}>
-          <Group position="left">
-            <Text
-              style={{
-                fontSize: 17,
-
-                fontWeight: 600,
-              }}
-            >
-              Timer:
-            </Text>
-            <Switch
-              onLabel="ON"
-              offLabel="OFF"
-              size="lg"
-              color="indigo"
-              styles={{
-                label: {
+          <Flex gap={4}>
+            <Group position="left">
+              <Text
+                style={{
                   fontSize: 17,
 
                   fontWeight: 600,
-                  marginBottom: 5,
-                  marginTop: 5,
-                },
-              }}
-              checked={isTimerOn}
-              onChange={(e) => setIsTimerOn(e.target.checked)}
-            />
-          </Group>
+                }}
+              >
+                Timer:
+              </Text>
+              <Switch
+                onLabel="ON"
+                offLabel="OFF"
+                size="lg"
+                color="indigo"
+                styles={{
+                  label: {
+                    fontSize: 17,
+
+                    fontWeight: 600,
+                    marginBottom: 5,
+                    marginTop: 5,
+                  },
+                }}
+                checked={isTimerOn}
+                onChange={(e) => setIsTimerOn(e.target.checked)}
+              />
+            </Group>
+            <Group position="left">
+              <Text
+                style={{
+                  fontSize: 17,
+
+                  fontWeight: 600,
+                }}
+              >
+                Pay with SPL(SOUL):
+              </Text>
+              <Switch
+                onLabel="ON"
+                offLabel="OFF"
+                size="lg"
+                color="indigo"
+                styles={{
+                  label: {
+                    fontSize: 17,
+
+                    fontWeight: 600,
+                    marginBottom: 5,
+                    marginTop: 5,
+                  },
+                }}
+                checked={paywithSpl}
+                onChange={(e) => setPayWithSpl(e.target.checked)}
+              />
+            </Group>
+          </Flex>
           <NumberInput
             label="Total Ticket Supply"
             placeholder="100"
@@ -270,7 +305,13 @@ const create = () => {
             minDate={new Date()}
             maxDate={dayjs(new Date()).add(1, "month").toDate()}
           />
-          <Button color="red" type="submit" size="lg" mt={20} style={{ backgroundColor: "#ff3200" }}>
+          <Button
+            color="red"
+            type="submit"
+            size="lg"
+            mt={20}
+            style={{ backgroundColor: "#ff3200" }}
+          >
             Confirm Creation
           </Button>
         </form>
@@ -310,5 +351,5 @@ const create = () => {
     </Flex>
   );
 };
-//export default 
+//export default
 export default withAdmin(create);

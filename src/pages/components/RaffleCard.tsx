@@ -69,17 +69,21 @@ const RaffleCard = ({ account }: RaffleCardType) => {
             <Text>Ticket Price</Text>
             {parsedAccount && (
               <Text fw={600} fz={20}>
-                {parsedAccount.ticketPrice.toNumber() / LAMPORTS_PER_SOL} SOL
+                {!parsedAccount.useSplPay
+                  ? `${parsedAccount.ticketPrice.toNumber() / LAMPORTS_PER_SOL
+                  } SOL`
+                  : `${parsedAccount.ticketPrice.toNumber() / Math.pow(10, 9)
+                  } SOUL`}
               </Text>
             )}
           </Flex>
         </Flex>
         {parsedAccount &&
-        parsedAccount.winner !== "11111111111111111111111111111111" ? (
+          parsedAccount.winner !== "11111111111111111111111111111111" ? (
           <Tooltip label={parsedAccount.winner.toBase58()}>
             <Flex justify={"space-between"} align={"center"}>
               {parsedAccount.winner.toBase58() !==
-              "11111111111111111111111111111111" ? (
+                "11111111111111111111111111111111" ? (
                 <>
                   <Text>Winner</Text>
                   <Text fw={600} fz={14} style={{ cursor: "pointer" }}>

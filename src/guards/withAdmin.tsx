@@ -1,3 +1,4 @@
+import { authorityAddress } from '@/utils/constants';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
@@ -9,12 +10,12 @@ const withAdmin = (WrappedComponent: any) => {
 
         useEffect(() => {
 
-            if (!connected || publicKey?.toBase58() != "AToZYuagDiJn5j9qPvwAcnQjiTmoefHU3F6GgL3rPJVy") {
+            if (!connected || publicKey?.toBase58() != authorityAddress.toBase58()) {
                 router.replace('/');
             }
         }, []);
 
-        if (!connected || publicKey?.toBase58() != "AToZYuagDiJn5j9qPvwAcnQjiTmoefHU3F6GgL3rPJVy") {
+        if (!connected || publicKey?.toBase58() != authorityAddress.toBase58()) {
             // You can show a loading spinner or other UI while redirecting
             return <div>Loading...</div>;
         }
