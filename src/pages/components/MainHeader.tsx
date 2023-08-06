@@ -18,7 +18,7 @@ const useStyles = createStyles((theme) => ({
     backgroundColor: "#FFFF",
     padding: 20,
     borderBottom: "0.25rem #DADADA solid",
-    zIndex:1
+    zIndex: 1
   },
   confirmButton: {
     backgroundColor: "#24243e",
