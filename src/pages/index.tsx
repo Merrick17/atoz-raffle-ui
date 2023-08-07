@@ -61,12 +61,11 @@ const Home = () => {
             "HbW8StbrbE9Fk77Szc5Wjgj9nQsnnggzPmrUZMSRRZqH",
           ].includes(elm.publicKey.toBase58())
       );
-      console.log("ACOUNT LIST", accountList)
+      console.log("ACOUNT LIST", accountList);
 
       setRaffleAccounts(accountList);
       // const accounts = await connection.getParsedProgramAccounts(programId);
       // console.log("Accounts", accounts);
-
     };
 
     initAccountData();
@@ -78,9 +77,9 @@ const Home = () => {
         // Fetch updated account data
         const parsedAccount = await program?.account.raffle.all();
 
-        const accountList = parsedAccount
+        const accountList = parsedAccount;
 
-        console.log("ACOUNT LIST", accountList)
+        console.log("ACOUNT LIST", accountList);
 
         setRaffleAccounts(accountList);
       }
@@ -141,7 +140,7 @@ const Home = () => {
                 </Flex>
                 {raffleAccount &&
                   raffleAccount.winner.toBase58() !==
-                  "11111111111111111111111111111111" && (
+                    "11111111111111111111111111111111" && (
                     <Tooltip label={raffleAccount.winner.toBase58()}>
                       <Flex
                         justify={"space-between"}
@@ -189,10 +188,11 @@ const Home = () => {
 
           <Tabs.Panel value="actives" pt="xs">
             <Flex w={"100%"} justify={"flex-start"} gap={42} wrap={"wrap"}>
-              {raffleAccounts.filter((elm) => {
-                console.log(" elm.account.visible", elm.account)
-                return elm.account.visible
-              })
+              {raffleAccounts
+                .filter((elm) => {
+                  console.log(" elm.account.visible", elm.account);
+                  return elm.account.visible;
+                })
                 .filter((elm) => elm.account.open && !elm.account.claimed)
                 .map((account, ind) => (
                   <RaffleCard account={account} key={ind.toString()} />
@@ -202,8 +202,9 @@ const Home = () => {
 
           <Tabs.Panel value="passives" pt="xs">
             <Flex w={"100%"} justify={"flex-start"} gap={42} wrap={"wrap"}>
-              {raffleAccounts.filter((elm) => elm.account.visible)
-                .filter((elm) => !elm.account.open && elm.account.claimed)
+              {raffleAccounts
+                .filter((elm) => elm.account.visible)
+                .filter((elm) => !elm.account.open)
                 .map((account, ind) => (
                   <RaffleCard account={account} key={ind.toString()} />
                 ))}
