@@ -1,7 +1,7 @@
 import { useDrawer } from "@/context/Drawer";
 import { createTokenAccount } from "@/utils/ata";
 import { getAta } from "@/utils/ata2";
-import { rewardMint } from "@/utils/constants";
+import { authorityAddress, rewardMint } from "@/utils/constants";
 import { getProgram } from "@/utils/program";
 import {
   ActionIcon,
@@ -91,7 +91,7 @@ const BuyToken: FC<RaffleButtonProps> = ({ countdown, closed, useTimer }) => {
               connection,
               rewardMint,
               publicKey,
-              raffleAccount.treasury, true
+              authorityAddress, true
             );
             if (programIx) {
               const tx = new Transaction().add(programIx);
@@ -145,7 +145,7 @@ const BuyToken: FC<RaffleButtonProps> = ({ countdown, closed, useTimer }) => {
                   signer: publicKey,
                   ticket: ticket.publicKey,
                   systemProgram: SystemProgram.programId,
-                  treasuryAccount: raffleAccount.treasury,
+                  treasuryAccount: authorityAddress,
                 })
                 .instruction();
               tickets.push(ticket);
