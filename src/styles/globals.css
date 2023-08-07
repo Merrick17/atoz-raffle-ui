@@ -3,9 +3,12 @@ html {
   scroll-behavior: smooth;
 }
 body {
-  font-family: 'Comic Neue', cursive;
+  font-family: 'Comic Neue';
   background: #FFFF !important;
 }
 .wallet-adapter-button-trigger{
   background-color: #ff3200 !important;
+  font-family: 'Comic Neue';
+  color: #FFFF !important;
 }
+
