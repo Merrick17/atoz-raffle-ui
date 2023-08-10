@@ -17,28 +17,24 @@ import { DateInput } from "@mantine/dates";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { Metaplex, Nft, walletAdapterIdentity } from "@metaplex-foundation/js";
-import { TOKEN_PROGRAM_ID, getAccount } from "@solana/spl-token";
+import { PROGRAM_ID as TOKEN_METADATA_PROGRAM_ID } from "@metaplex-foundation/mpl-token-metadata";
 import {
-  Metadata,
-  PROGRAM_ID as TOKEN_METADATA_PROGRAM_ID,
-  createFreezeDelegatedAccountInstruction,
-  createThawDelegatedAccountInstruction,
-} from "@metaplex-foundation/mpl-token-metadata";
+  ASSOCIATED_TOKEN_PROGRAM_ID,
+  TOKEN_PROGRAM_ID,
+  getAccount,
+} from "@solana/spl-token";
 import {
   useAnchorWallet,
   useConnection,
   useWallet,
 } from "@solana/wallet-adapter-react";
-import {
-  LAMPORTS_PER_SOL,
-  PublicKey,
-  Signer,
-  Transaction,
-} from "@solana/web3.js";
+import { LAMPORTS_PER_SOL, PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
 import { IconSquareRoundedPlus } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { useState } from "react";
 import SelectNftModal from "../components/SelectNftModal";
+import * as anchor from "@coral-xyz/anchor";
+
 const useStyles = createStyles((theme) => ({
   selectNft: {
     width: 250,
@@ -115,7 +111,7 @@ const create = () => {
           message: "You need to select an nft as a prize",
         });
       } else {
-        console.log("Values", values);
+        console.log("NFT", selectedPrize);
         const { totalSupply, ticketPrice, startDate, endDate } = values;
         const program = getProgram(connection, anchorWallet);
         let [raffleAdr] = PublicKey.findProgramAddressSync(
@@ -148,16 +144,28 @@ const create = () => {
           ],
           TOKEN_METADATA_PROGRAM_ID
         );
-        if (tokenAccountInfo.isFrozen) {
-          const ix = createThawDelegatedAccountInstruction({
-            delegate: publicKey,
-            edition: edition,
-            mint: selectedPrize.mint.address,
-            tokenAccount: tokenAccount,
-          });
-          const tx = new Transaction().add(ix);
-          const res = await sendTransaction(tx, connection);
-        }
+        const [signTokenRecord] = PublicKey.findProgramAddressSync(
+          [
+            Buffer.from("metadata"),
+            TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+            selectedPrize.mint.address.toBuffer(),
+            Buffer.from("token_record"),
+            tokenAccount.toBuffer(),
+          ],
+
+          TOKEN_METADATA_PROGRAM_ID
+        );
+        const [prizeTokenRecord] = PublicKey.findProgramAddressSync(
+          [
+            Buffer.from("metadata"),
+            TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+            selectedPrize.mint.address.toBuffer(),
+            Buffer.from("token_record"),
+            prizeTokenAdr.toBuffer(),
+          ],
+
+          TOKEN_METADATA_PROGRAM_ID
+        );
         const initInstruction = await program.methods
           .initialize(
             //@ts-ignore
@@ -170,7 +178,8 @@ const create = () => {
             selectedPrize.json?.name,
             selectedPrize.mint.address,
             isTimerOn,
-            paywithSpl
+            paywithSpl,
+            tokenAccountInfo.isFrozen
           )
           .accounts({
             raffleAccount: raffleAdr,
@@ -179,8 +188,21 @@ const create = () => {
             prizeMint: selectedPrize.mint.address,
             tokenProgram: TOKEN_PROGRAM_ID,
             prizeTokenAccount: prizeTokenAdr,
-            editionAta: edition,
-            mplTokenProgram: TOKEN_METADATA_PROGRAM_ID,
+            tokenMetadata: selectedPrize.metadataAddress,
+            signerTokenRecordAccount: signTokenRecord,
+            prizeTokenRecordAccount: prizeTokenRecord,
+            authorizationRules: new PublicKey(
+              "eBJLFYPxJmMGKuFwpDWkzxZeUrad92kZRC5BJLpzyT9"
+            ),
+            authorizationRulesProgram: new PublicKey(
+              "auth9SigNpDKz4sJJ1DfCTuZrZNSAgh9sFD3rboVmgg"
+            ),
+            sysvarInstructions: anchor.web3.SYSVAR_INSTRUCTIONS_PUBKEY,
+            editionAt: edition,
+            ataProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+            systemProgram: SystemProgram.programId,
+            mplTokenProgram:TOKEN_METADATA_PROGRAM_ID
+
           })
           .instruction();
         const initTx = new Transaction();

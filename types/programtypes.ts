@@ -36,17 +36,52 @@ export type AtozRaffle = {
           isSigner: false;
         },
         {
-          name: "editionAta";
+          name: "tokenMetadata";
           isMut: true;
           isSigner: false;
         },
         {
-          name: "tokenProgram";
+          name: "editionAt";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "authorizationRulesProgram";
           isMut: false;
           isSigner: false;
         },
         {
+          name: "authorizationRules";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "sysvarInstructions";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "signerTokenRecordAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "prizeTokenRecordAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
           name: "mplTokenProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "ataProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "tokenProgram";
           isMut: false;
           isSigner: false;
         }
@@ -82,6 +117,10 @@ export type AtozRaffle = {
         },
         {
           name: "useSplPay";
+          type: "bool";
+        },
+        {
+          name: "isPnft";
           type: "bool";
         }
       ];
@@ -269,6 +308,56 @@ export type AtozRaffle = {
           name: "tokenProgram";
           isMut: false;
           isSigner: false;
+        },
+        {
+          name: "editionAt";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "tokenMetadata";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "prizeTokenRecordAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "winnerTokenRecordAccount";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "sysvarInstructions";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "authorizationRulesProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "authorizationRules";
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: "ataProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "systemProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "mplTokenProgram";
+          isMut: false;
+          isSigner: false;
         }
       ];
       args: [];
@@ -446,6 +535,11 @@ export type AtozRaffle = {
       code: 6007;
       name: "WrongTime";
       msg: "Raffle ended";
+    },
+    {
+      code: 6008;
+      name: "BuiltError";
+      msg: "Built Error";
     }
   ];
 };
@@ -488,17 +582,52 @@ export const IDL: AtozRaffle = {
           isSigner: false,
         },
         {
-          name: "editionAta",
+          name: "tokenMetadata",
           isMut: true,
           isSigner: false,
         },
         {
-          name: "tokenProgram",
+          name: "editionAt",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "authorizationRulesProgram",
           isMut: false,
           isSigner: false,
         },
         {
+          name: "authorizationRules",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "sysvarInstructions",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "signerTokenRecordAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "prizeTokenRecordAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
           name: "mplTokenProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "ataProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "tokenProgram",
           isMut: false,
           isSigner: false,
         },
@@ -534,6 +663,10 @@ export const IDL: AtozRaffle = {
         },
         {
           name: "useSplPay",
+          type: "bool",
+        },
+        {
+          name: "isPnft",
           type: "bool",
         },
       ],
@@ -722,6 +855,56 @@ export const IDL: AtozRaffle = {
           isMut: false,
           isSigner: false,
         },
+        {
+          name: "editionAt",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "tokenMetadata",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "prizeTokenRecordAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "winnerTokenRecordAccount",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "sysvarInstructions",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "authorizationRulesProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "authorizationRules",
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: "ataProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "systemProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "mplTokenProgram",
+          isMut: false,
+          isSigner: false,
+        },
       ],
       args: [],
     },
@@ -898,6 +1081,11 @@ export const IDL: AtozRaffle = {
       code: 6007,
       name: "WrongTime",
       msg: "Raffle ended",
+    },
+    {
+      code: 6008,
+      name: "BuiltError",
+      msg: "Built Error",
     },
   ],
 };
