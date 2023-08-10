@@ -21,6 +21,8 @@ import { TOKEN_PROGRAM_ID, getAccount } from "@solana/spl-token";
 import {
   Metadata,
   PROGRAM_ID as TOKEN_METADATA_PROGRAM_ID,
+  createFreezeDelegatedAccountInstruction,
+  createThawDelegatedAccountInstruction,
 } from "@metaplex-foundation/mpl-token-metadata";
 import {
   useAnchorWallet,
@@ -146,6 +148,16 @@ const create = () => {
           ],
           TOKEN_METADATA_PROGRAM_ID
         );
+        if (tokenAccountInfo.isFrozen) {
+          const ix = createThawDelegatedAccountInstruction({
+            delegate: publicKey,
+            edition: edition,
+            mint: selectedPrize.mint.address,
+            tokenAccount: tokenAccount,
+          });
+          const tx = new Transaction().add(ix);
+          const res = await sendTransaction(tx, connection);
+        }
         const initInstruction = await program.methods
           .initialize(
             //@ts-ignore
