@@ -19,6 +19,7 @@
     "@mantine/next": "^6.0.10",
     "@mantine/notifications": "^6.0.10",
     "@metaplex-foundation/js": "^0.19.3",
+    "@metaplex-foundation/mpl-token-metadata": "^2.13.0",
     "@snowflake-so/snowflake-sdk": "^1.0.12",
     "@solana/spl-token": "^0.3.7",
     "@solana/wallet-adapter-base": "^0.9.22",

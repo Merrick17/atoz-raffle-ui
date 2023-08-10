@@ -16,14 +16,23 @@ import {
 import { DateInput } from "@mantine/dates";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
-import { Nft } from "@metaplex-foundation/js";
-import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import { Metaplex, Nft, walletAdapterIdentity } from "@metaplex-foundation/js";
+import { TOKEN_PROGRAM_ID, getAccount } from "@solana/spl-token";
+import {
+  Metadata,
+  PROGRAM_ID as TOKEN_METADATA_PROGRAM_ID,
+} from "@metaplex-foundation/mpl-token-metadata";
 import {
   useAnchorWallet,
   useConnection,
   useWallet,
 } from "@solana/wallet-adapter-react";
-import { LAMPORTS_PER_SOL, PublicKey, Transaction } from "@solana/web3.js";
+import {
+  LAMPORTS_PER_SOL,
+  PublicKey,
+  Signer,
+  Transaction,
+} from "@solana/web3.js";
 import { IconSquareRoundedPlus } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { useState } from "react";
@@ -53,6 +62,10 @@ const create = () => {
   const [isTimerOn, setIsTimerOn] = useState(true);
   const [paywithSpl, setPayWithSpl] = useState(true);
   const { publicKey, connected, sendTransaction } = useWallet();
+  const wallet = useWallet();
+  const metaplex = new Metaplex(connection);
+  metaplex.use(walletAdapterIdentity(wallet));
+
   const form = useForm({
     initialValues: {
       totalSupply: 0,
@@ -123,6 +136,16 @@ const create = () => {
           ],
           program.programId
         );
+        const tokenAccountInfo = await getAccount(connection, tokenAccount);
+        const [edition] = PublicKey.findProgramAddressSync(
+          [
+            Buffer.from("metadata"),
+            TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+            selectedPrize.mint.address.toBuffer(),
+            Buffer.from("edition"),
+          ],
+          TOKEN_METADATA_PROGRAM_ID
+        );
         const initInstruction = await program.methods
           .initialize(
             //@ts-ignore
@@ -144,6 +167,8 @@ const create = () => {
             prizeMint: selectedPrize.mint.address,
             tokenProgram: TOKEN_PROGRAM_ID,
             prizeTokenAccount: prizeTokenAdr,
+            editionAta: edition,
+            mplTokenProgram: TOKEN_METADATA_PROGRAM_ID,
           })
           .instruction();
         const initTx = new Transaction();

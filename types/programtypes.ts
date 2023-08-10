@@ -36,7 +36,17 @@ export type AtozRaffle = {
           isSigner: false;
         },
         {
+          name: "editionAta";
+          isMut: true;
+          isSigner: false;
+        },
+        {
           name: "tokenProgram";
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: "mplTokenProgram";
           isMut: false;
           isSigner: false;
         }
@@ -346,78 +356,6 @@ export type AtozRaffle = {
       };
     },
     {
-      name: "oldRaffle";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "winner";
-            type: "publicKey";
-          },
-          {
-            name: "totalSuppy";
-            type: "u64";
-          },
-          {
-            name: "ticketsBought";
-            type: "u64";
-          },
-          {
-            name: "ticketPrice";
-            type: "u64";
-          },
-          {
-            name: "startTime";
-            type: "i64";
-          },
-          {
-            name: "endTime";
-            type: "i64";
-          },
-          {
-            name: "participantsList";
-            type: {
-              vec: {
-                defined: "Participants";
-              };
-            };
-          },
-          {
-            name: "treasury";
-            type: "publicKey";
-          },
-          {
-            name: "claimed";
-            type: "bool";
-          },
-          {
-            name: "name";
-            type: "string";
-          },
-          {
-            name: "ticketList";
-            type: {
-              vec: {
-                defined: "TicketBought";
-              };
-            };
-          },
-          {
-            name: "prize";
-            type: "publicKey";
-          },
-          {
-            name: "open";
-            type: "bool";
-          },
-          {
-            name: "useTimer";
-            type: "bool";
-          }
-        ];
-      };
-    },
-    {
       name: "ticket";
       type: {
         kind: "struct";
@@ -550,7 +488,17 @@ export const IDL: AtozRaffle = {
           isSigner: false,
         },
         {
+          name: "editionAta",
+          isMut: true,
+          isSigner: false,
+        },
+        {
           name: "tokenProgram",
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: "mplTokenProgram",
           isMut: false,
           isSigner: false,
         },
@@ -854,78 +802,6 @@ export const IDL: AtozRaffle = {
           },
           {
             name: "visible",
-            type: "bool",
-          },
-        ],
-      },
-    },
-    {
-      name: "oldRaffle",
-      type: {
-        kind: "struct",
-        fields: [
-          {
-            name: "winner",
-            type: "publicKey",
-          },
-          {
-            name: "totalSuppy",
-            type: "u64",
-          },
-          {
-            name: "ticketsBought",
-            type: "u64",
-          },
-          {
-            name: "ticketPrice",
-            type: "u64",
-          },
-          {
-            name: "startTime",
-            type: "i64",
-          },
-          {
-            name: "endTime",
-            type: "i64",
-          },
-          {
-            name: "participantsList",
-            type: {
-              vec: {
-                defined: "Participants",
-              },
-            },
-          },
-          {
-            name: "treasury",
-            type: "publicKey",
-          },
-          {
-            name: "claimed",
-            type: "bool",
-          },
-          {
-            name: "name",
-            type: "string",
-          },
-          {
-            name: "ticketList",
-            type: {
-              vec: {
-                defined: "TicketBought",
-              },
-            },
-          },
-          {
-            name: "prize",
-            type: "publicKey",
-          },
-          {
-            name: "open",
-            type: "bool",
-          },
-          {
-            name: "useTimer",
             type: "bool",
           },
         ],
