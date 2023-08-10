@@ -95,7 +95,7 @@ const ClaimButton: FC<RaffleButtonProps> = () => {
               [
                 Buffer.from("metadata"),
                 TOKEN_METADATA_PROGRAM_ID.toBuffer(),
-                raffleAccount.prize.address.toBuffer(),
+                raffleAccount.prize.toBuffer(),
                 Buffer.from("token_record"),
                 prizeTokenAdr.toBuffer(),
               ],
