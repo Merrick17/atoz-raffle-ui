@@ -7,6 +7,7 @@ import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   TOKEN_PROGRAM_ID,
   createAssociatedTokenAccountInstruction,
+  getAccount,
   getAssociatedTokenAddress,
 } from "@solana/spl-token";
 import {
@@ -19,6 +20,7 @@ import { FC } from "react";
 import { PROGRAM_ID as TOKEN_METADATA_PROGRAM_ID } from "@metaplex-foundation/mpl-token-metadata";
 import * as anchor from '@coral-xyz/anchor'
 import { Metaplex, walletAdapterIdentity } from "@metaplex-foundation/js";
+import { createTokenAccount } from "@/utils/ata";
 // Renderer callback with condition
 const renderer = ({
   hours,
@@ -59,20 +61,28 @@ const ClaimButton: FC<RaffleButtonProps> = () => {
             metaplex.use(walletAdapterIdentity(wallet));
             const program = getProgram(connection, anchorWallet);
             const selectedNft = await metaplex.nfts().findByMint({ mintAddress: raffleAccount.prize });
+            console.log("Selected NFT", selectedNft)
+            // const { tokenAccount, tx: ataTx } = await createTokenAccount(selectedNft.mint.address, publicKey, publicKey)
             let tokenAccount = await getAssociatedTokenAddress(
               raffleAccount.prize, // mint
-              publicKey // owner
+              publicKey, // owner
             );
-            let ataTx = new Transaction().add(
-              createAssociatedTokenAccountInstruction(
-                publicKey, // payer
-                tokenAccount, // ata
-                publicKey, // owner
-                raffleAccount.prize // mint
-              )
-            );
-            // console.log("Tx", ataTx);
-            await sendTransaction(ataTx, connection, { skipPreflight: true });
+            const tokenAccountInfo = await getAccount(connection, tokenAccount);
+            if (!tokenAccountInfo) {
+              let ataTx = new Transaction().add(
+                createAssociatedTokenAccountInstruction(
+                  publicKey, // payer
+                  tokenAccount, // ata
+                  publicKey, // owner
+                  raffleAccount.prize // mint
+                )
+              );
+              const rs = await sendTransaction(ataTx, connection, { skipPreflight: true });
+              console.log("Tx", rs);
+            }
+
+
+
             let [prizeTokenAdr, nonce] = PublicKey.findProgramAddressSync(
               [
                 raffleAdr.toBuffer(),
@@ -114,6 +124,7 @@ const ClaimButton: FC<RaffleButtonProps> = () => {
             const claimInst = await program.methods
               .claimPrize()
               .accounts({
+                signer:publicKey,
                 winner: tokenAccount,
                 prizeMint: raffleAccount.prize,
                 tokenProgram: TOKEN_PROGRAM_ID,
@@ -130,7 +141,7 @@ const ClaimButton: FC<RaffleButtonProps> = () => {
                 authorizationRulesProgram: new PublicKey(
                   "auth9SigNpDKz4sJJ1DfCTuZrZNSAgh9sFD3rboVmgg"
                 ),
-                editionAt:edition,
+                editionAt: edition,
                 sysvarInstructions: anchor.web3.SYSVAR_INSTRUCTIONS_PUBKEY,
                 ataProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
                 systemProgram: SystemProgram.programId,
@@ -138,7 +149,7 @@ const ClaimButton: FC<RaffleButtonProps> = () => {
               })
               .instruction();
             const claimTx = new Transaction().add(claimInst);
-            const tx = await sendTransaction(claimTx, connection);
+            const tx = await sendTransaction(claimTx, connection, { skipPreflight: true });
             notifications.show({
               color: "teal",
               title: "Transaction Sent",
@@ -177,6 +188,7 @@ const ClaimButton: FC<RaffleButtonProps> = () => {
         });
       }
     } catch (error: any) {
+      console.log("Error", error)
       notifications.show({
         color: "red",
         title: "Error",

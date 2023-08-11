@@ -282,6 +282,11 @@
           "isSigner": false
         },
         {
+          "name": "signer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
           "name": "winner",
           "isMut": true,
           "isSigner": false
