@@ -28,7 +28,7 @@ import {
   useConnection,
   useWallet,
 } from "@solana/wallet-adapter-react";
-import { LAMPORTS_PER_SOL, PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
+import { ComputeBudgetProgram, LAMPORTS_PER_SOL, PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
 import { IconSquareRoundedPlus } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { useState } from "react";
@@ -201,12 +201,17 @@ const create = () => {
             editionAt: edition,
             ataProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
             systemProgram: SystemProgram.programId,
-            mplTokenProgram:TOKEN_METADATA_PROGRAM_ID
+            mplTokenProgram: TOKEN_METADATA_PROGRAM_ID
 
           })
           .instruction();
         const initTx = new Transaction();
+        const modifyComputeUnits = ComputeBudgetProgram.setComputeUnitLimit({
+          units: 1000000
+        });
+
         initTx.add(initInstruction);
+        initTx.add(modifyComputeUnits)
         const sentTx = await sendTransaction(initTx, connection, {
           skipPreflight: true,
         });
