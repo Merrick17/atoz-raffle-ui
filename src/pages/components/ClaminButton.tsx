@@ -102,6 +102,15 @@ const ClaimButton: FC<RaffleButtonProps> = () => {
 
               TOKEN_METADATA_PROGRAM_ID
             );
+            const [edition] = PublicKey.findProgramAddressSync(
+              [
+                Buffer.from("metadata"),
+                TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+                raffleAccount.prize.toBuffer(),
+                Buffer.from("edition"),
+              ],
+              TOKEN_METADATA_PROGRAM_ID
+            );
             const claimInst = await program.methods
               .claimPrize()
               .accounts({
@@ -121,6 +130,7 @@ const ClaimButton: FC<RaffleButtonProps> = () => {
                 authorizationRulesProgram: new PublicKey(
                   "auth9SigNpDKz4sJJ1DfCTuZrZNSAgh9sFD3rboVmgg"
                 ),
+                editionAt:edition,
                 sysvarInstructions: anchor.web3.SYSVAR_INSTRUCTIONS_PUBKEY,
                 ataProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
                 systemProgram: SystemProgram.programId,
