@@ -131,16 +131,18 @@ const Home = () => {
                     <Text>Ticket Price: </Text>
                     {raffleAccount && (
                       <Text fw={600} fz={20}>
-                        {raffleAccount.ticketPrice.toNumber() /
-                          LAMPORTS_PER_SOL}{" "}
-                        SOL
+                        {!raffleAccount.useSplPay
+                          ? `${raffleAccount.ticketPrice.toNumber() / LAMPORTS_PER_SOL
+                          } SOL`
+                          : `${raffleAccount.ticketPrice.toNumber() / Math.pow(10, 9)
+                          } SOUL`}
                       </Text>
                     )}
                   </Flex>
                 </Flex>
                 {raffleAccount &&
                   raffleAccount.winner.toBase58() !==
-                    "11111111111111111111111111111111" && (
+                  "11111111111111111111111111111111" && (
                     <Tooltip label={raffleAccount.winner.toBase58()}>
                       <Flex
                         justify={"space-between"}
