@@ -156,8 +156,8 @@ const Home = () => {
                 </Flex>
                 {raffleAccount &&
                   raffleAccount.winner.toBase58() !==
-                  "11111111111111111111111111111111" && (
-                    <Tooltip label={raffleAccount.winner.toBase58()}>
+                  "11111111111111111111111111111111" && winnerInfo && (
+                    <Tooltip label={winnerInfo.owner.toBase58()}>
                       <Flex
                         justify={"space-between"}
                         align={"center"}
@@ -166,8 +166,8 @@ const Home = () => {
                         <Text>Winner: </Text>
                         {raffleAccount && (
                           <Text fw={600} fz={20}>
-                            {raffleAccount.winner.toBase58().slice(0, 4)}....{" "}
-                            {raffleAccount.winner.toBase58().slice(-4)}
+                            {winnerInfo && winnerInfo.owner.toBase58().slice(0, 4)}....{" "}
+                            {winnerInfo.owner.toBase58().slice(-4)}
                           </Text>
                         )}
                       </Flex>

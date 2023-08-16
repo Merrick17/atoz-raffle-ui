@@ -1,5 +1,5 @@
 import { Button, Center, Flex, Text } from "@mantine/core";
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import Countdown from "react-countdown";
 
 // Renderer callback with condition
@@ -40,6 +40,9 @@ const RaffleButton: FC<RaffleButtonProps> = ({
   useTimer,
   winner
 }) => {
+  useEffect(() => {
+    console.log("Winner", winner)
+  }, [winner])
   return (
     <Center onClick={onClick} mt={10}>
       <Button color="red" radius={"md"} fullWidth size="lg" mt={"lg"} h={60} style={{ backgroundColor: "#ff3200" }}>
@@ -51,11 +54,12 @@ const RaffleButton: FC<RaffleButtonProps> = ({
                 <Countdown date={countdown} renderer={renderer} />
               ) : (
                 <span style={{
-                  fontWeight: 300, fontSize: 12
-                }}>{ winner !== "11111111111111111111111111111111" ? winner : "Winner not picked yet"}</span>
+                  fontWeight: 300, fontSize: 12, color: "#FFFF"
+                }}>{winner !== "11111111111111111111111111111111" ? winner : "Winner not picked yet"}</span>
               )}
             </span>
           )}
+          <Text fz={12}>{winner !== "11111111111111111111111111111111" ? winner : "Winner not picked yet"}</Text>
         </Flex>
       </Button>
     </Center>

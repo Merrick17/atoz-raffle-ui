@@ -30,11 +30,12 @@ const RaffleCard = ({ account }: RaffleCardType) => {
     setParsedAccount(parsedAccount);
     //@ts-ignore
     setPrizeInfo(nft);
-    //getWinnerAdr();
+    getWinnerAdr();
   };
   const getWinnerAdr = async () => {
     if (parsedAccount && parsedAccount.winner.toBase58() !== "11111111111111111111111111111111") {
-      const winningTicket = await program.account.ticket.fetch(parsedAccount.winner)
+      const winningTicket = await program.account.ticket.fetch(parsedAccount.winner); 
+      console.log("Winning TIcket",winningTicket.owner.toBase58()); 
       setWinnerInfo(winningTicket);
     }
   }
@@ -104,8 +105,8 @@ const RaffleCard = ({ account }: RaffleCardType) => {
                 <>
                   <Text>Winner</Text>
                   <Text fw={600} fz={14} style={{ cursor: "pointer" }}>
-                    {parsedAccount.winner.toBase58().slice(0, 4)}...
-                    {parsedAccount.winner.toBase58().slice(-4)}
+                    {winnerInfo && winnerInfo.owner.toBase58().slice(0, 4)}...
+                    {winnerInfo && winnerInfo.owner.toBase58().slice(-4)}
                   </Text>
                 </>
               ) : (
@@ -130,7 +131,7 @@ const RaffleCard = ({ account }: RaffleCardType) => {
               useTimer={parsedAccount.useTimer}
               countdown={new Date(parsedAccount.endTime.toNumber())}
               onClick={showRaffleDetails}
-              winner={parsedAccount.winner.toBase58()}
+              winner={winnerInfo.owner.toBase58()}
             />
           ))}
       </Card.Section>

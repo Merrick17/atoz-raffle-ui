@@ -49,13 +49,13 @@ type RaffleButtonProps = {};
 const ClaimButton: FC<RaffleButtonProps> = () => {
   const { connection } = useConnection();
   const anchorWallet = useAnchorWallet();
-  const { raffleAccount, raffleAdr } = useDrawer();
+  const { raffleAccount, raffleAdr, winnerInfo } = useDrawer();
   const { publicKey, connected, sendTransaction } = useWallet();
   const wallet = useWallet();
   const handleClaim = async () => {
     try {
-      if (raffleAdr && connected && publicKey) {
-        if (publicKey.toBase58() == raffleAccount.winner.toBase58()) {
+      if (raffleAdr && connected && publicKey && winnerInfo) {
+        if (publicKey.toBase58() == winnerInfo.owner.toBase58()) {
           if (!raffleAccount.claimed) {
             const metaplex = new Metaplex(connection);
             metaplex.use(walletAdapterIdentity(wallet));
@@ -125,7 +125,7 @@ const ClaimButton: FC<RaffleButtonProps> = () => {
             const claimInst = await program.methods
               .claimPrize(ticketInfo.ticketId)
               .accounts({
-                winning_ticket:raffleAccount.winner,
+                winning_ticket: raffleAccount.winner,
                 signer: publicKey,
                 winner: tokenAccount,
                 prizeMint: raffleAccount.prize,
