@@ -55,7 +55,7 @@ const ClaimButton: FC<RaffleButtonProps> = () => {
   const handleClaim = async () => {
     try {
       if (raffleAdr && connected && publicKey && winnerInfo) {
-        if (publicKey.toBase58() == winnerInfo.owner.toBase58()) {
+        if (publicKey.toBase58()) {
           if (!raffleAccount.claimed) {
             const metaplex = new Metaplex(connection);
             metaplex.use(walletAdapterIdentity(wallet));
@@ -67,18 +67,25 @@ const ClaimButton: FC<RaffleButtonProps> = () => {
               raffleAccount.prize, // mint
               publicKey, // owner
             );
-            const tokenAccountInfo = await getAccount(connection, tokenAccount);
-            if (!tokenAccountInfo) {
-              let ataTx = new Transaction().add(
-                createAssociatedTokenAccountInstruction(
-                  publicKey, // payer
-                  tokenAccount, // ata
-                  publicKey, // owner
-                  raffleAccount.prize // mint
-                )
-              );
-              const rs = await sendTransaction(ataTx, connection, { skipPreflight: true });
-              console.log("Tx", rs);
+            let tokenAccountInfo;
+            try {
+              tokenAccountInfo = await getAccount(connection, tokenAccount);
+            } catch (error) {
+              if (!tokenAccountInfo) {
+                let ataTx = new Transaction().add(
+                  createAssociatedTokenAccountInstruction(
+                    publicKey, // payer
+                    tokenAccount, // ata
+                    publicKey, // owner
+                    raffleAccount.prize // mint
+                  )
+                );
+                const rs = await sendTransaction(ataTx, connection, { skipPreflight: true });
+                console.log("Tx", rs);
+              }
+
+
+
             }
 
 
@@ -122,10 +129,21 @@ const ClaimButton: FC<RaffleButtonProps> = () => {
               TOKEN_METADATA_PROGRAM_ID
             );
             const ticketInfo = await program.account.ticket.fetch(raffleAccount.winner);
+            console.log("Tiicket INFO", ticketInfo.ticketId.toNumber());
+            const [ticket] = PublicKey.findProgramAddressSync(
+              [
+                Buffer.from(utils.bytes.utf8.encode("ticket_atoz")),
+                raffleAdr.toBuffer(),
+                Buffer.from(utils.bytes.utf8.encode((ticketInfo.ticketId.toNumber()+1).toString())),
+              ],
+              program.programId
+            );
+            console.log("WINNER",raffleAccount.winner.toBase58()); 
+            console.log("GENERATED TICKET", ticket.toBase58());
             const claimInst = await program.methods
-              .claimPrize(ticketInfo.ticketId)
+              .claimPrize(new anchor.BN(ticketInfo.ticketId.toNumber() + 1))
               .accounts({
-                winning_ticket: raffleAccount.winner,
+                winningTicket: raffleAccount.winner,
                 signer: publicKey,
                 winner: tokenAccount,
                 prizeMint: raffleAccount.prize,

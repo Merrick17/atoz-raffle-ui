@@ -28,7 +28,8 @@ const Home = () => {
         raffleAccount.endTime.toNumber() > Date.now() &&
         raffleAccount.winner.toBase58() != "11111111111111111111111111111111"
       ) {
-        return <ClaimButton />;
+         return <ClaimButton />;
+        
       } else {
         return (
           <BuyTicket

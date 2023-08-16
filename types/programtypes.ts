@@ -250,16 +250,6 @@ export type AtozRaffle = {
           "isSigner": false
         },
         {
-          "name": "prizeTokenAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "signerTokenAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
           "name": "signer",
           "isMut": true,
           "isSigner": true
@@ -278,10 +268,6 @@ export type AtozRaffle = {
       "args": [
         {
           "name": "ticketNumber",
-          "type": "u64"
-        },
-        {
-          "name": "amount",
           "type": "u64"
         }
       ]
@@ -418,6 +404,11 @@ export type AtozRaffle = {
           "isSigner": false
         },
         {
+          "name": "winningTicket",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "signer",
           "isMut": true,
           "isSigner": true
@@ -503,7 +494,12 @@ export type AtozRaffle = {
           "isSigner": false
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "ticketNumber",
+          "type": "u64"
+        }
+      ]
     }
   ],
   "accounts": [
@@ -939,16 +935,6 @@ export const IDL: AtozRaffle = {
           "isSigner": false
         },
         {
-          "name": "prizeTokenAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "signerTokenAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
           "name": "signer",
           "isMut": true,
           "isSigner": true
@@ -967,10 +953,6 @@ export const IDL: AtozRaffle = {
       "args": [
         {
           "name": "ticketNumber",
-          "type": "u64"
-        },
-        {
-          "name": "amount",
           "type": "u64"
         }
       ]
@@ -1107,6 +1089,11 @@ export const IDL: AtozRaffle = {
           "isSigner": false
         },
         {
+          "name": "winningTicket",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "signer",
           "isMut": true,
           "isSigner": true
@@ -1192,7 +1179,12 @@ export const IDL: AtozRaffle = {
           "isSigner": false
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "ticketNumber",
+          "type": "u64"
+        }
+      ]
     }
   ],
   "accounts": [

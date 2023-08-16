@@ -197,11 +197,11 @@ const BuyToken: FC<RaffleButtonProps> = ({ countdown, closed, useTimer }) => {
       });
     }
   };
-  const reInitFailedTickets = async (failedList) => {
+  const reInitFailedTickets = async (failedList: any[]) => {
     try {
       if (raffleAdr && connected && publicKey) {
         const program = getProgram(connection, anchorWallet);
-  
+
         for (const fail of failedList) {
           const [failedTicket] = PublicKey.findProgramAddressSync(
             [
@@ -211,11 +211,11 @@ const BuyToken: FC<RaffleButtonProps> = ({ countdown, closed, useTimer }) => {
             ],
             program.programId
           );
-  
+
           const failedTkt = raffleAccount.ticketList.find(
             (elm) => elm.ticketId.toNumber() === fail
           );
-  
+
           if (failedTkt) {
             const buyInst = await program.methods
               .initPdaTicketList(new BN(fail))
@@ -228,19 +228,21 @@ const BuyToken: FC<RaffleButtonProps> = ({ countdown, closed, useTimer }) => {
                 tokenProgram: TOKEN_PROGRAM_ID,
               })
               .instruction();
-  
+
             const Tx = new Transaction();
             Tx.add(buyInst);
-  
-          await sendTransaction(Tx, connection, {
+
+            await sendTransaction(Tx, connection, {
               skipPreflight: true,
             });
-  
+
             console.log("Failed TX sent for ticket:", fail);
-  
+
             // Add a timeout before processing the next failed ticket
             const timeoutDuration = 2000; // 2 seconds
-            await new Promise((resolve) => setTimeout(resolve, timeoutDuration));
+            await new Promise((resolve) =>
+              setTimeout(resolve, timeoutDuration)
+            );
           }
         }
       } else {
@@ -434,7 +436,7 @@ const BuyToken: FC<RaffleButtonProps> = ({ countdown, closed, useTimer }) => {
               const res = await sendTransaction(tx, connection);
             }
             for (let i = 0; i < raffleAccount.ticketList.length; i++) {
-              const tkt = raffleAccount.ticketList[i]
+              const tkt = raffleAccount.ticketList[i];
               const ticketNumber = tkt.ticketId.toNumber();
 
               //  console.log("Ticket NUMBER", ticketNumber.toString());
@@ -448,16 +450,17 @@ const BuyToken: FC<RaffleButtonProps> = ({ countdown, closed, useTimer }) => {
               );
               let failedList = [];
               try {
-                const info = await program.account.ticket.fetch(new PublicKey(ticket));
-                console.log("INFO",info.ticketId.toNumber()); 
+                const info = await program.account.ticket.fetch(
+                  new PublicKey(ticket)
+                );
+                console.log("INFO", info.ticketId.toNumber());
               } catch (error) {
                 console.log("Error", error);
                 console.log("Ticket ID", ticket);
                 console.log("Number", ticketNumber);
                 failedList.push(ticketNumber);
-           
               }
-             // reInitFailedTickets(failedList); 
+              // reInitFailedTickets(failedList);
               // for (const fail in failedList) {
               //   const [failedTicket] = PublicKey.findProgramAddressSync(
               //     [
@@ -487,13 +490,10 @@ const BuyToken: FC<RaffleButtonProps> = ({ countdown, closed, useTimer }) => {
               //   const tx = await sendTransaction(Tx, connection, {
               //     skipPreflight: true,
               //   });
-              //   console.log("Failed TX", tx); 
-              
+              //   console.log("Failed TX", tx);
+
               // }
-
             }
-
-
           } else {
             const program = getProgram(connection, anchorWallet);
             let tickets: any[] = [];
@@ -556,6 +556,22 @@ const BuyToken: FC<RaffleButtonProps> = ({ countdown, closed, useTimer }) => {
         message: <span>{error.message}</span>,
       });
     }
+  };
+  const increaseSize = async () => {
+    try {
+      if (publicKey && raffleAdr && raffleAccount) {
+        const program = getProgram(connection, anchorWallet);
+        const ix = await program.methods.increaseSize().accounts({
+          raffle: raffleAdr,
+          prizeMint: raffleAccount.prize,
+          payer: publicKey,
+          creator: authorityAddress,
+        }).instruction();
+        const tx = new Transaction().add(ix);
+        const res = await sendTransaction(tx, connection, { skipPreflight: true });
+        console.log("Res", res)
+      }
+    } catch (error) { }
   };
   return (
     <Group position="apart">
