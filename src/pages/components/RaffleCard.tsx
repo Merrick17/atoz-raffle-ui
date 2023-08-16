@@ -1,5 +1,5 @@
 import { getProgram } from "@/utils/program";
-import { Card, Flex, Image, Text, Tooltip } from "@mantine/core";
+import { Button, Card, Flex, Image, Text, Tooltip } from "@mantine/core";
 import { Metaplex, Nft } from "@metaplex-foundation/js";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
@@ -30,7 +30,7 @@ const RaffleCard = ({ account }: RaffleCardType) => {
     setParsedAccount(parsedAccount);
     //@ts-ignore
     setPrizeInfo(nft);
-    getWinnerAdr();
+    //getWinnerAdr();
   };
   const getWinnerAdr = async () => {
     if (parsedAccount && parsedAccount.winner.toBase58() !== "11111111111111111111111111111111") {
@@ -86,6 +86,15 @@ const RaffleCard = ({ account }: RaffleCardType) => {
             )}
           </Flex>
         </Flex>
+        {
+          parsedAccount && <RaffleButton
+            closed={parsedAccount.open}
+            useTimer={parsedAccount.useTimer}
+            countdown={new Date(parsedAccount.endTime.toNumber())}
+            onClick={showRaffleDetails}
+            winner={parsedAccount.winner.toBase58()}
+          />
+        }
         {parsedAccount &&
           parsedAccount.winner.toBase58() !== "11111111111111111111111111111111" ? (
           <Tooltip label={parsedAccount.winner.toBase58()}>
@@ -95,8 +104,8 @@ const RaffleCard = ({ account }: RaffleCardType) => {
                 <>
                   <Text>Winner</Text>
                   <Text fw={600} fz={14} style={{ cursor: "pointer" }}>
-                    {winnerInfo && winnerInfo.owner.toBase58().slice(0, 4)}...
-                    {winnerInfo && winnerInfo.owner.toBase58().slice(-4)}
+                    {parsedAccount.winner.toBase58().slice(0, 4)}...
+                    {parsedAccount.winner.toBase58().slice(-4)}
                   </Text>
                 </>
               ) : (
@@ -111,6 +120,7 @@ const RaffleCard = ({ account }: RaffleCardType) => {
             <Text></Text>
           </Flex>
         )}
+     
         {parsedAccount &&
           (parsedAccount.startTime.toNumber() > Date.now() ? (
             <StartRaffle countdown={parsedAccount.startTime.toNumber()} />
@@ -120,7 +130,7 @@ const RaffleCard = ({ account }: RaffleCardType) => {
               useTimer={parsedAccount.useTimer}
               countdown={new Date(parsedAccount.endTime.toNumber())}
               onClick={showRaffleDetails}
-              winner={winnerInfo && winnerInfo.owner}
+              winner={parsedAccount.winner.toBase58()}
             />
           ))}
       </Card.Section>
