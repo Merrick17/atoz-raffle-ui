@@ -198,7 +198,7 @@ const Home = () => {
               fw={"bold"}
               fz={20}
             >
-              Ended Raffles
+              Past Raffles
             </Tabs.Tab>
           </Tabs.List>
 
