@@ -52,7 +52,7 @@ const RaffleButton: FC<RaffleButtonProps> = ({
               ) : (
                 <span style={{
                   fontWeight: 300, fontSize: 12
-                }}>{winner !== "11111111111111111111111111111111" ? winner : "Winner not picked yet"}</span>
+                }}>{winner && winner !== "11111111111111111111111111111111" ? winner : "Winner not picked yet"}</span>
               )}
             </span>
           )}

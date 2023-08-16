@@ -121,10 +121,12 @@ const ClaimButton: FC<RaffleButtonProps> = () => {
               ],
               TOKEN_METADATA_PROGRAM_ID
             );
+            const ticketInfo = await program.account.ticket.fetch(raffleAccount.winner);
             const claimInst = await program.methods
-              .claimPrize()
+              .claimPrize(ticketInfo.ticketId)
               .accounts({
-                signer:publicKey,
+                winning_ticket:raffleAccount.winner,
+                signer: publicKey,
                 winner: tokenAccount,
                 prizeMint: raffleAccount.prize,
                 tokenProgram: TOKEN_PROGRAM_ID,

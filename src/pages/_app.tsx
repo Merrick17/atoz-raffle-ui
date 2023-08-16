@@ -8,7 +8,10 @@ import {
   WalletProvider,
 } from "@solana/wallet-adapter-react";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
-import { PhantomWalletAdapter, SlopeWalletAdapter } from "@solana/wallet-adapter-wallets";
+import {
+  PhantomWalletAdapter,
+  SlopeWalletAdapter,
+} from "@solana/wallet-adapter-wallets";
 import type { AppProps } from "next/app";
 import Head from "next/head";
 import { useMemo } from "react";
@@ -17,13 +20,14 @@ import { DrawerProvider } from "@/context/Drawer";
 
 // Default styles that can be overridden by your app
 require("@solana/wallet-adapter-react-ui/styles.css");
-
+//@ts-ignore
 export default function App({ Component, pageProps }: AppProps) {
   // The network can be set to 'devnet', 'testnet', or 'mainnet-beta'.
   const network = WalletAdapterNetwork.Devnet;
 
   // You can also provide a custom RPC endpoint.
-  const endpoint = "https://flashy-frosty-energy.solana-mainnet.discover.quiknode.pro/d43909b1eb698964f230e00afe18c673d10e5c0f/";
+  const endpoint =
+    "https://radial-delicate-layer.solana-mainnet.discover.quiknode.pro/124d30642a313843475e1ac3f67e59d11d55d943";
   // const endpoint =
   //   "https://solana-mainnet.g.alchemy.com/v2/eX95m8Jvxulc6KkZbzJ8QlJYwLf5DqcE";
   const wallets = useMemo(
@@ -41,7 +45,7 @@ export default function App({ Component, pageProps }: AppProps) {
        * in the npm package `@solana/wallet-adapter-wallets`.
        */
       new PhantomWalletAdapter(),
-      new SlopeWalletAdapter()
+      new SlopeWalletAdapter(),
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [network]
@@ -55,24 +59,25 @@ export default function App({ Component, pageProps }: AppProps) {
         withGlobalStyles
         withNormalizeCSS
         theme={{
-          fontFamily: 'Comic Neue',
+          fontFamily: "Comic Neue",
           /** Put your mantine theme override here */
           colorScheme: "light",
         }}
-      ><DrawerProvider>
+      >
+        <DrawerProvider>
           <ConnectionProvider endpoint={endpoint}>
             <WalletProvider wallets={wallets} autoConnect>
               <WalletModalProvider>
                 <Notifications />
 
                 <Layout>
+                
                   <Component {...pageProps} />
                 </Layout>
               </WalletModalProvider>
             </WalletProvider>
           </ConnectionProvider>
-
-        </DrawerProvider >
+        </DrawerProvider>
       </MantineProvider>
     </>
   );

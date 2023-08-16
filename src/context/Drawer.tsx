@@ -10,8 +10,10 @@ interface DrawerContextType {
   setAccount: (account: any) => void;
   nftDetails: any;
   setNftDetails: (nft: any) => void;
-  raffleAdr:PublicKey|null;
-  setRaffleAdr:any;
+  raffleAdr: PublicKey | null;
+  setRaffleAdr: any;
+  winnerInfo: any;
+  setWinner: (info: any) => any;
 }
 
 const DrawerContext = createContext<DrawerContextType | null>(null);
@@ -27,6 +29,7 @@ export const useDrawer = () => {
 export const DrawerProvider = ({ children }: { children: any }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [raffleAccount, setRaffleAccount] = useState<any>(null);
+  const [winnerInfo, setWinnerInfo] = useState<any>(null);
   const [raffleAdr, setRaffleAdr] = useState<PublicKey | null>(null);
   const [nftDetails, setNftDetails] = useState<any>(null);
 
@@ -35,6 +38,7 @@ export const DrawerProvider = ({ children }: { children: any }) => {
   const closeDrawer = () => setIsOpen(false);
 
   const setAccount = (account: any) => setRaffleAccount(account);
+  const setWinner = (info: any) => setWinnerInfo(info);
 
   const value: DrawerContextType = {
     isOpen,
@@ -46,7 +50,7 @@ export const DrawerProvider = ({ children }: { children: any }) => {
     nftDetails,
     setNftDetails,
     raffleAdr,
-    setRaffleAdr,
+    setRaffleAdr, winnerInfo, setWinner
   };
 
   return (

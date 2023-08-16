@@ -111,7 +111,6 @@ const create = () => {
           message: "You need to select an nft as a prize",
         });
       } else {
-        console.log("NFT", selectedPrize);
         const { totalSupply, ticketPrice, startDate, endDate } = values;
         const program = getProgram(connection, anchorWallet);
         let [raffleAdr] = PublicKey.findProgramAddressSync(

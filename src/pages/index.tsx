@@ -7,7 +7,7 @@ import {
   useWallet,
 } from "@solana/wallet-adapter-react";
 import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import BuyTicket from "./components/BuyTicket";
 import ClaimButton from "./components/ClaminButton";
 import RaffleCard from "./components/RaffleCard";
@@ -19,7 +19,7 @@ const Home = () => {
   const anchorWallet = useAnchorWallet();
   const { connected, publicKey } = useWallet();
   const [raffleAccounts, setRaffleAccounts] = useState<any[]>([]);
-  const { isOpen, closeDrawer, raffleAccount, nftDetails } = useDrawer();
+  const { isOpen, closeDrawer, raffleAccount, nftDetails, setWinner, winnerInfo } = useDrawer();
   const program = getProgram(connection, anchorWallet);
   const { width } = useViewportSize();
   const displayButton = () => {
@@ -90,7 +90,21 @@ const Home = () => {
       connection.removeProgramAccountChangeListener(subscriptionId);
     };
   }, [connection]);
+  const fetchWinnerInfo = async () => {
+    try {
+      if (raffleAccount && raffleAccount.winner !== "11111111111111111111111111111111") {
+        const winner = await program.account.ticket.fetch(raffleAccount.winner);
+        setWinner(winner);
+      }
 
+
+    } catch (error) {
+
+    }
+  }
+  useMemo(() => {
+    fetchWinnerInfo()
+  }, [raffleAccount])
   return (
     <>
       <Drawer
