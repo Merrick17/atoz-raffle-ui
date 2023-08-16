@@ -34,8 +34,8 @@ const RaffleCard = ({ account }: RaffleCardType) => {
   };
   const getWinnerAdr = async () => {
     if (parsedAccount && parsedAccount.winner.toBase58() !== "11111111111111111111111111111111") {
-      const winningTicket = await program.account.ticket.fetch(parsedAccount.winner); 
-      console.log("Winning TIcket",winningTicket.owner.toBase58()); 
+      const winningTicket = await program.account.ticket.fetch(parsedAccount.winner);
+      console.log("Winning TIcket", winningTicket.owner.toBase58());
       setWinnerInfo(winningTicket);
     }
   }
@@ -93,7 +93,7 @@ const RaffleCard = ({ account }: RaffleCardType) => {
             useTimer={parsedAccount.useTimer}
             countdown={new Date(parsedAccount.endTime.toNumber())}
             onClick={showRaffleDetails}
-            winner={parsedAccount.winner.toBase58()}
+            winner={winnerInfo ? winnerInfo.owner.toBase58() : ""}
           />
         }
         {parsedAccount &&
@@ -121,7 +121,7 @@ const RaffleCard = ({ account }: RaffleCardType) => {
             <Text></Text>
           </Flex>
         )}
-     
+
         {parsedAccount &&
           (parsedAccount.startTime.toNumber() > Date.now() ? (
             <StartRaffle countdown={parsedAccount.startTime.toNumber()} />
@@ -131,7 +131,7 @@ const RaffleCard = ({ account }: RaffleCardType) => {
               useTimer={parsedAccount.useTimer}
               countdown={new Date(parsedAccount.endTime.toNumber())}
               onClick={showRaffleDetails}
-              winner={winnerInfo.owner.toBase58()}
+              winner={winnerInfo ? winnerInfo.owner.toBase58() : ""}
             />
           ))}
       </Card.Section>
