@@ -65,7 +65,7 @@ const RaffleCard = ({ account }: RaffleCardType) => {
         </Text>
         <Flex w={"100%"} justify={"space-between"} align={"center"}>
           <Flex direction={"column"}>
-            <Text>Tickets Remaining</Text>
+            <Text>Tickets Sold</Text>
             {parsedAccount && (
               <Text fw={600} fz={20}>
                 {parsedAccount.ticketsBought.toNumber()}/
