@@ -49,10 +49,7 @@ const Home = () => {
     // Fetch initial account data
     const initAccountData = async () => {
       const parsedAccount = await program?.account.raffle.all();
-      console.log(
-        "parsedAccount",
-        parsedAccount.map((elm) => elm.publicKey.toBase58())
-      );
+     
       const accountList = parsedAccount.filter(
         (elm) =>
           ![
@@ -62,7 +59,7 @@ const Home = () => {
             "HbW8StbrbE9Fk77Szc5Wjgj9nQsnnggzPmrUZMSRRZqH",
           ].includes(elm.publicKey.toBase58())
       );
-      console.log("ACOUNT LIST", accountList);
+
 
       setRaffleAccounts(accountList);
       // const accounts = await connection.getParsedProgramAccounts(programId);
@@ -80,7 +77,7 @@ const Home = () => {
 
         const accountList = parsedAccount;
 
-        console.log("ACOUNT LIST", accountList);
+      
 
         setRaffleAccounts(accountList);
       }

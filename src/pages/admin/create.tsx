@@ -76,7 +76,7 @@ const create = () => {
       totalSupply: (value) =>
         Number(value) <= 2 ? "At least 3 tickets" : null,
       ticketPrice: (value) => {
-        console.log("Number", parseFloat(value.toString()));
+       
         return parseFloat(value.toString()) <= 0
           ? "Price should be higher than 0"
           : null;
@@ -205,12 +205,12 @@ const create = () => {
           })
           .instruction();
         const initTx = new Transaction();
-        const modifyComputeUnits = ComputeBudgetProgram.setComputeUnitLimit({
-          units: 1000000
-        });
+        // const modifyComputeUnits = ComputeBudgetProgram.setComputeUnitLimit({
+        //   units: 1000000
+        // });
 
         initTx.add(initInstruction);
-        initTx.add(modifyComputeUnits)
+        //initTx.add(modifyComputeUnits)
         const sentTx = await sendTransaction(initTx, connection, {
           skipPreflight: true,
         });

@@ -37,7 +37,7 @@ const AdminHome = () => {
             async (accountInfo, context) => {
                 // Fetch updated account data
                 const parsedAccount = await program?.account.raffle.all();
-                console.log("parsedAccount", parsedAccount);
+      
                 // const accounts = await connection.getParsedProgramAccounts(programId);
                 // console.log("Accounts", accounts);
                 setRaffleAccounts(parsedAccount);

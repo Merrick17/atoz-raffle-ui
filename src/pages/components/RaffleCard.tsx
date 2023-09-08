@@ -16,39 +16,52 @@ const RaffleCard = ({ account }: RaffleCardType) => {
   const anchorWallet = useAnchorWallet();
   const metaplex = new Metaplex(connection);
   const program = getProgram(connection, anchorWallet);
+
   const [parsedAccount, setParsedAccount] = useState<any>(null);
   const [prizeInfo, setPrizeInfo] = useState<Nft | null>(null);
-  const [winnerInfo, setWinnerInfo] = useState<any>(null)
-  const parseRaffleInfo = async () => {
-    const parsedAccount = account.account;
-    const nft = await metaplex
-      .nfts()
-      .findByMint({ mintAddress: parsedAccount.prize });
-    // console.log(`PArsed Account`, nft);
-    // console.log("Account Pub Key", parsedAccount.startTime.toNumber());
-    // console.log("End DATE",parsedAccount.endTime.toNumber())
-    setParsedAccount(parsedAccount);
-    //@ts-ignore
-    setPrizeInfo(nft);
-    getWinnerAdr();
-  };
-  const getWinnerAdr = async () => {
-    if (parsedAccount && parsedAccount.winner.toBase58() !== "11111111111111111111111111111111") {
-      const winningTicket = await program.account.ticket.fetch(parsedAccount.winner);
-      console.log("Winning TIcket", winningTicket.owner.toBase58());
-      setWinnerInfo(winningTicket);
+  const [winnerInfo, setWinnerInfo] = useState<any>(null);
+
+  useEffect(() => {
+    // Parse raffle information and set state
+    const parseRaffleInfo = async () => {
+      const parsedAccount = account.account;
+      const nft = await metaplex.nfts().findByMint({ mintAddress: parsedAccount.prize });
+
+      setParsedAccount(parsedAccount);
+      setPrizeInfo(nft);
+    };
+
+    console.log("Raffle Account", account);
+    parseRaffleInfo();
+  }, [account]);
+
+  useEffect(() => {
+    // Fetch winner information when parsedAccount is available
+    const getWinnerAdr = async () => {
+      if (parsedAccount && parsedAccount.winner.toBase58() !== "11111111111111111111111111111111") {
+        const winningTicket = await program.account.ticket.fetch(parsedAccount.winner);
+        console.log("Winning Ticket", winningTicket.owner.toBase58());
+        setWinnerInfo(winningTicket);
+      }
+    };
+
+    if (parsedAccount) {
+      getWinnerAdr();
     }
-  }
+  }, [parsedAccount, program]);
+
   const showRaffleDetails = () => {
     setAccount(parsedAccount);
     setNftDetails(prizeInfo);
     setRaffleAdr(account.publicKey);
     openDrawer();
   };
-  useEffect(() => {
-    console.log("Raffle Account", account);
-    parseRaffleInfo();
-  }, [account]);
+
+  if (!parsedAccount || !prizeInfo) {
+    // Data is not available yet, return a loading state or null
+    return null;
+  }
+
   return (
     <Card withBorder w={400} h={640} radius={"md"}>
       <Card.Section>
