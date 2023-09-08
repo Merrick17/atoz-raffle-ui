@@ -134,14 +134,15 @@ const ClaimButton: FC<RaffleButtonProps> = () => {
               [
                 Buffer.from(utils.bytes.utf8.encode("ticket_atoz")),
                 raffleAdr.toBuffer(),
-                Buffer.from(utils.bytes.utf8.encode((ticketInfo.ticketId.toNumber()+1).toString())),
+                Buffer.from(utils.bytes.utf8.encode((ticketInfo.ticketId.toNumber() + 1).toString())),
               ],
               program.programId
             );
-            console.log("WINNER",raffleAccount.winner.toBase58()); 
+            const ataInfo = await getAccount(connection, tokenAccount);
+            console.log("WINNER", raffleAccount.winner.toBase58());
             console.log("GENERATED TICKET", ticket.toBase58());
             const claimInst = await program.methods
-              .claimPrize(new anchor.BN(ticketInfo.ticketId.toNumber() + 1))
+              .claimPrize(new anchor.BN(ticketInfo.ticketId.toNumber() + 1), ataInfo.isFrozen)
               .accounts({
                 winningTicket: raffleAccount.winner,
                 signer: publicKey,

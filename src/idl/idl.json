@@ -498,6 +498,10 @@
         {
           "name": "ticketNumber",
           "type": "u64"
+        },
+        {
+          "name": "isPnft",
+          "type": "bool"
         }
       ]
     }
