@@ -70,7 +70,18 @@ const MainHeader = () => {
             Admin
           </Button>
         )}
-
+        <Button
+          onClick={() => {
+            if (typeof window !== "undefined") {
+              window.open('https://jup.ag/swap/USDC-SOUL', '_blank')
+            }
+          }}
+          size="lg"
+          color="red"
+          radius={"md"}
+          style={{ backgroundColor: "#ff3200" }}
+        >
+          Buy SOOL</Button>
         <WalletMultiButton />
       </Group>
     </Header>

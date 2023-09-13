@@ -9,47 +9,45 @@ import {
 import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 import { useEffect, useMemo, useState } from "react";
 import BuyTicket from "./components/BuyTicket";
-import ClaimButton from "./components/ClaminButton";
+
 import RaffleCard from "./components/RaffleCard";
 import { useViewportSize } from "@mantine/hooks";
+import ClaimButton from "./components/ClaminButton";
 
 const Home = () => {
   const programIdString = "BXpLxLCwAwqP9d273RH9n7GNzsyafrt5wMp658Qg2hcv";
   const { connection } = useConnection();
   const anchorWallet = useAnchorWallet();
-  const { connected, publicKey } = useWallet();
-  const [raffleAccounts, setRaffleAccounts] = useState<any[]>([]);
   const { isOpen, closeDrawer, raffleAccount, nftDetails, setWinner, winnerInfo } = useDrawer();
-  const program = getProgram(connection, anchorWallet);
+  const [raffleAccounts, setRaffleAccounts] = useState<any[]>([])
+  const program = useMemo(() => getProgram(connection, anchorWallet), [connection, anchorWallet]);
   const { width } = useViewportSize();
-  const displayButton = () => {
-    if (raffleAccount) {
-      if (
-        raffleAccount.endTime.toNumber() > Date.now() &&
-        raffleAccount.winner.toBase58() != "11111111111111111111111111111111"
-      ) {
-         return <ClaimButton />;
-        
-      } else {
-        return (
-          <BuyTicket
-            useTimer={raffleAccount.useTimer}
-            closed={raffleAccount.open}
-            countdown={new Date(raffleAccount.endTime.toNumber())}
-          />
-        );
-      }
+
+  const displayButton = useMemo(() => {
+    if (!raffleAccount) return <></>;
+  
+    if (
+      raffleAccount.endTime.toNumber() > Date.now() &&
+      raffleAccount.winner.toBase58() !== "11111111111111111111111111111111"
+    ) {
+      return <ClaimButton />;
     } else {
-      return <></>;
+      return (
+        <BuyTicket
+          useTimer={raffleAccount.useTimer}
+          closed={raffleAccount.open}
+          countdown={new Date(raffleAccount.endTime.toNumber())}
+        />
+      );
     }
-  };
+  }, [raffleAccount]);
+
   useEffect(() => {
     const programId = new PublicKey(programIdString);
 
-    // Fetch initial account data
     const initAccountData = async () => {
       const parsedAccount = await program?.account.raffle.all();
-     
+
       const accountList = parsedAccount.filter(
         (elm) =>
           ![
@@ -60,49 +58,42 @@ const Home = () => {
           ].includes(elm.publicKey.toBase58())
       );
 
-
       setRaffleAccounts(accountList);
-      // const accounts = await connection.getParsedProgramAccounts(programId);
-      // console.log("Accounts", accounts);
     };
 
     initAccountData();
 
-    // Listen for program account changes
     const subscriptionId = connection.onProgramAccountChange(
       programId,
       async (accountInfo, context) => {
-        // Fetch updated account data
         const parsedAccount = await program?.account.raffle.all();
 
         const accountList = parsedAccount;
-
-      
 
         setRaffleAccounts(accountList);
       }
     );
 
-    // Cleanup function to unsubscribe from event listener
     return () => {
       connection.removeProgramAccountChangeListener(subscriptionId);
     };
-  }, [connection]);
+  }, [connection, program]);
+
   const fetchWinnerInfo = async () => {
     try {
       if (raffleAccount && raffleAccount.winner !== "11111111111111111111111111111111") {
         const winner = await program.account.ticket.fetch(raffleAccount.winner);
         setWinner(winner);
       }
-
-
     } catch (error) {
-
+      // Handle errors if needed
     }
-  }
+  };
+
   useMemo(() => {
-    fetchWinnerInfo()
-  }, [raffleAccount])
+    fetchWinnerInfo();
+  }, [raffleAccount]);
+
   return (
     <>
       <Drawer
@@ -144,17 +135,14 @@ const Home = () => {
                     {raffleAccount && (
                       <Text fw={600} fz={20}>
                         {!raffleAccount.useSplPay
-                          ? `${raffleAccount.ticketPrice.toNumber() / LAMPORTS_PER_SOL
-                          } SOL`
-                          : `${raffleAccount.ticketPrice.toNumber() / Math.pow(10, 9)
-                          } SOUL`}
+                          ? `${raffleAccount.ticketPrice.toNumber() / LAMPORTS_PER_SOL} SOL`
+                          : `${raffleAccount.ticketPrice.toNumber() / Math.pow(10, 9)} SOUL`}
                       </Text>
                     )}
                   </Flex>
                 </Flex>
                 {raffleAccount &&
-                  raffleAccount.winner.toBase58() !==
-                  "11111111111111111111111111111111" && winnerInfo && (
+                  raffleAccount.winner.toBase58() !== "11111111111111111111111111111111" && winnerInfo && (
                     <Tooltip label={winnerInfo ? winnerInfo.owner.toBase58() : ""}>
                       <Flex
                         justify={"space-between"}
@@ -203,10 +191,7 @@ const Home = () => {
           <Tabs.Panel value="actives" pt="xs">
             <Flex w={"100%"} justify={"flex-start"} gap={42} wrap={"wrap"}>
               {raffleAccounts
-                .filter((elm) => {
-                  console.log(" elm.account.visible", elm.account);
-                  return elm.account.visible;
-                })
+                .filter((elm) => elm.account.visible)
                 .filter((elm) => elm.account.open && !elm.account.claimed)
                 .map((account, ind) => (
                   <RaffleCard account={account} key={ind.toString()} />

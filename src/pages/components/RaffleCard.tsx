@@ -22,33 +22,47 @@ const RaffleCard = ({ account }: RaffleCardType) => {
   const [winnerInfo, setWinnerInfo] = useState<any>(null);
 
   useEffect(() => {
+    let isMounted = true; // A flag to check if the component is mounted
+
     // Parse raffle information and set state
     const parseRaffleInfo = async () => {
-      const parsedAccount = account.account;
-      const nft = await metaplex.nfts().findByMint({ mintAddress: parsedAccount.prize });
+      try {
+        const parsedAccountData = account.account;
+        const nft = await metaplex.nfts().findByMint({ mintAddress: parsedAccountData.prize });
 
-      setParsedAccount(parsedAccount);
-      setPrizeInfo(nft);
+        if (isMounted) {
+          setParsedAccount(parsedAccountData);
+          setPrizeInfo(nft);
+        }
+      } catch (error) {
+        // Handle errors if necessary
+      }
     };
 
-    console.log("Raffle Account", account);
     parseRaffleInfo();
-  }, [account]);
 
-  useEffect(() => {
     // Fetch winner information when parsedAccount is available
     const getWinnerAdr = async () => {
-      if (parsedAccount && parsedAccount.winner.toBase58() !== "11111111111111111111111111111111") {
-        const winningTicket = await program.account.ticket.fetch(parsedAccount.winner);
-        console.log("Winning Ticket", winningTicket.owner.toBase58());
-        setWinnerInfo(winningTicket);
+      try {
+        if (parsedAccount && parsedAccount.winner.toBase58() !== "11111111111111111111111111111111") {
+          const winningTicket = await program.account.ticket.fetch(parsedAccount.winner);
+          if (isMounted) {
+            setWinnerInfo(winningTicket);
+          }
+        }
+      } catch (error) {
+        // Handle errors if necessary
       }
     };
 
     if (parsedAccount) {
       getWinnerAdr();
     }
-  }, [parsedAccount, program]);
+
+    return () => {
+      isMounted = false; // Set the flag to false when unmounting
+    };
+  }, [account, connection, program, metaplex]);
 
   const showRaffleDetails = () => {
     setAccount(parsedAccount);
@@ -61,7 +75,6 @@ const RaffleCard = ({ account }: RaffleCardType) => {
     // Data is not available yet, return a loading state or null
     return null;
   }
-
   return (
     <Card withBorder w={400} h={640} radius={"md"}>
       <Card.Section>

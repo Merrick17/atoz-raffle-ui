@@ -1,8 +1,11 @@
 import { useDrawer } from "@/context/Drawer";
 import { getProgram } from "@/utils/program";
+import * as anchor from '@coral-xyz/anchor';
 import { utils } from "@coral-xyz/anchor";
 import { Button, Center, Flex, Text } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
+import { Metaplex, walletAdapterIdentity } from "@metaplex-foundation/js";
+import { PROGRAM_ID as TOKEN_METADATA_PROGRAM_ID } from "@metaplex-foundation/mpl-token-metadata";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   TOKEN_PROGRAM_ID,
@@ -17,10 +20,6 @@ import {
 } from "@solana/wallet-adapter-react";
 import { PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
 import { FC } from "react";
-import { PROGRAM_ID as TOKEN_METADATA_PROGRAM_ID } from "@metaplex-foundation/mpl-token-metadata";
-import * as anchor from '@coral-xyz/anchor'
-import { Metaplex, walletAdapterIdentity } from "@metaplex-foundation/js";
-import { createTokenAccount } from "@/utils/ata";
 // Renderer callback with condition
 const renderer = ({
   hours,
