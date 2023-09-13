@@ -61,15 +61,15 @@ const ClaimButton: FC<RaffleButtonProps> = () => {
             const program = getProgram(connection, anchorWallet);
             const selectedNft = await metaplex.nfts().findByMint({ mintAddress: raffleAccount.prize });
             console.log("Selected NFT", selectedNft)
-            // const { tokenAccount, tx: ataTx } = await createTokenAccount(selectedNft.mint.address, publicKey, publicKey)
-            // let tokenAccount = await getAssociatedTokenAddress(
-            //   raffleAccount.prize, // mint
-            //   publicKey, // owner
-            // );
+            //const { tokenAccount, tx: ataTx } = await createTokenAccount(selectedNft.mint.address, publicKey, publicKey)
             let tokenAccount = await getAssociatedTokenAddress(
               raffleAccount.prize, // mint
-              new PublicKey("5hNbwWK3SvZqWHxbSVJr5Q23CfWrK2h5EfYCEWisB6Ln"), // owner
+              publicKey, // owner
             );
+            // let tokenAccount = await getAssociatedTokenAddress(
+            //   raffleAccount.prize, // mint
+            //   new PublicKey("5hNbwWK3SvZqWHxbSVJr5Q23CfWrK2h5EfYCEWisB6Ln"), // owner
+            // );
             let tokenAccountInfo;
             try {
               tokenAccountInfo = await getAccount(connection, tokenAccount);
