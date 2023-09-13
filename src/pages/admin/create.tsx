@@ -205,12 +205,12 @@ const create = () => {
           })
           .instruction();
         const initTx = new Transaction();
-        // const modifyComputeUnits = ComputeBudgetProgram.setComputeUnitLimit({
-        //   units: 1000000
-        // });
+        const modifyComputeUnits = ComputeBudgetProgram.setComputeUnitLimit({
+          units: 2000000
+        });
 
         initTx.add(initInstruction);
-        //initTx.add(modifyComputeUnits)
+        initTx.add(modifyComputeUnits)
         const sentTx = await sendTransaction(initTx, connection, {
           skipPreflight: true,
         });
