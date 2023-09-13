@@ -81,7 +81,7 @@ const MainHeader = () => {
           radius={"md"}
           style={{ backgroundColor: "#ff3200" }}
         >
-          Buy SOOL</Button>
+          Buy SOUL</Button>
         <WalletMultiButton />
       </Group>
     </Header>
