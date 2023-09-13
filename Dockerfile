@@ -22,6 +22,9 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+ENV NEXT_PUBLIC_AUTHORITY_ADDRESS SoULkUw8WRdZKNT1FhMtCUDggDXCagHtdEFQAmGuM7Z
+ENV NEXT_PUBLIC_PROGRAM_ID BXpLxLCwAwqP9d273RH9n7GNzsyafrt5wMp658Qg2hcv
+ENV NEXT_PUBLIC_REWARD_MINT F6weWmuc1vwdL4u38Ro9jKXHEMjP9BoNdWMF5o5TvtJf
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
 # Uncomment the following line in case you want to disable telemetry during the build.

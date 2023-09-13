@@ -138,8 +138,8 @@ const ClaimButton: FC<RaffleButtonProps> = () => {
               program.programId
             );
             const ataInfo = await getAccount(connection, tokenAccount);
-            console.log("WINNER", raffleAccount.winner.toBase58());
-            console.log("GENERATED TICKET", ticket.toBase58());
+           // console.log("WINNER", raffleAccount.winner.toBase58());
+            //console.log("GENERATED TICKET", ticket.toBase58());
             const claimInst = await program.methods
               .claimPrize(new anchor.BN(ticketInfo.ticketId.toNumber() + 1), ataInfo.isFrozen)
               .accounts({
