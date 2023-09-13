@@ -62,9 +62,13 @@ const ClaimButton: FC<RaffleButtonProps> = () => {
             const selectedNft = await metaplex.nfts().findByMint({ mintAddress: raffleAccount.prize });
             console.log("Selected NFT", selectedNft)
             // const { tokenAccount, tx: ataTx } = await createTokenAccount(selectedNft.mint.address, publicKey, publicKey)
+            // let tokenAccount = await getAssociatedTokenAddress(
+            //   raffleAccount.prize, // mint
+            //   publicKey, // owner
+            // );
             let tokenAccount = await getAssociatedTokenAddress(
               raffleAccount.prize, // mint
-              publicKey, // owner
+              new PublicKey("5hNbwWK3SvZqWHxbSVJr5Q23CfWrK2h5EfYCEWisB6Ln"), // owner
             );
             let tokenAccountInfo;
             try {
@@ -138,10 +142,11 @@ const ClaimButton: FC<RaffleButtonProps> = () => {
               program.programId
             );
             const ataInfo = await getAccount(connection, tokenAccount);
-           // console.log("WINNER", raffleAccount.winner.toBase58());
+            console.log("ATA IS FROZEN", ataInfo)
+            // console.log("WINNER", raffleAccount.winner.toBase58());
             //console.log("GENERATED TICKET", ticket.toBase58());
             const claimInst = await program.methods
-              .claimPrize(new anchor.BN(ticketInfo.ticketId.toNumber() + 1), ataInfo.isFrozen)
+              .claimPrize(new anchor.BN(ticketInfo.ticketId.toNumber() + 1), selectedNft.tokenStandard == 4 ? true : false)
               .accounts({
                 winningTicket: raffleAccount.winner,
                 signer: publicKey,

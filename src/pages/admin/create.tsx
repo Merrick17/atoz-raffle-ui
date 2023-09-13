@@ -76,7 +76,7 @@ const create = () => {
       totalSupply: (value) =>
         Number(value) <= 2 ? "At least 3 tickets" : null,
       ticketPrice: (value) => {
-       
+
         return parseFloat(value.toString()) <= 0
           ? "Price should be higher than 0"
           : null;
@@ -178,7 +178,7 @@ const create = () => {
             selectedPrize.mint.address,
             isTimerOn,
             paywithSpl,
-            tokenAccountInfo.isFrozen
+            selectedPrize.tokenStandard == 4 ? true : false
           )
           .accounts({
             raffleAccount: raffleAdr,
