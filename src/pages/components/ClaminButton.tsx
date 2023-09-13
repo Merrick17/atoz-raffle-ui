@@ -18,7 +18,7 @@ import {
   useConnection,
   useWallet,
 } from "@solana/wallet-adapter-react";
-import { PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
+import { ComputeBudgetProgram, PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
 import { FC } from "react";
 // Renderer callback with condition
 const renderer = ({
@@ -173,7 +173,10 @@ const ClaimButton: FC<RaffleButtonProps> = () => {
                 mplTokenProgram: TOKEN_METADATA_PROGRAM_ID
               })
               .instruction();
-            const claimTx = new Transaction().add(claimInst);
+            const modifyComputeUnits = ComputeBudgetProgram.setComputeUnitLimit({
+              units: 2000000
+            });
+            const claimTx = new Transaction().add(claimInst).add(modifyComputeUnits);
             const tx = await sendTransaction(claimTx, connection, { skipPreflight: true });
             notifications.show({
               color: "teal",
